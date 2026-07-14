@@ -1,0 +1,10 @@
+# Shared build context for both packages/engine/Dockerfile and
+# packages/gateway/Dockerfile (both build from the repo root).
+**/node_modules
+**/dist
+**/target
+**/.turbo
+.git
+.env
+.env.*
+*.log

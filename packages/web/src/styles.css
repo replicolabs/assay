@@ -1,0 +1,721 @@
+/* ---------------------------------------------------------------------- */
+/* Assay — design tokens                                                  */
+/* Cream/bone ground, bronze used sparingly, Fraunces for the register,   */
+/* Plex Sans for reading copy, Plex Mono for evidence (receipt) figures.  */
+/* ---------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light dark;
+
+  --bone: #f4eee1;
+  --bone-deep: #e9dfc9;
+  --paper-glass: rgba(255, 255, 255, 0.56);
+  --paper-glass-strong: rgba(255, 255, 255, 0.74);
+
+  --ink: #2a241c;
+  --ink-soft: #6b6154;
+  --ink-faint: #9a9082;
+
+  --bronze: #a1792f;
+  --bronze-deep: #7c5a26;
+  --bronze-bright: #c79a4b;
+  --bronze-wash: rgba(161, 121, 47, 0.12);
+
+  --hairline: rgba(42, 36, 28, 0.16);
+  --hairline-strong: rgba(42, 36, 28, 0.28);
+
+  --rust: #954226;
+  --rust-bg: rgba(149, 66, 38, 0.09);
+  --rust-border: rgba(149, 66, 38, 0.35);
+
+  --shadow-card: 0 1px 2px rgba(42, 36, 28, 0.06), 0 12px 28px -16px rgba(42, 36, 28, 0.28);
+
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", ui-serif, serif;
+  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bone: #1c1811;
+    --bone-deep: #262019;
+    --paper-glass: rgba(38, 32, 24, 0.62);
+    --paper-glass-strong: rgba(46, 39, 29, 0.8);
+
+    --ink: #ece4d3;
+    --ink-soft: #bdb09a;
+    --ink-faint: #857a68;
+
+    --bronze: #c79a4b;
+    --bronze-deep: #d4ac66;
+    --bronze-bright: #e4bd77;
+    --bronze-wash: rgba(199, 154, 75, 0.16);
+
+    --hairline: rgba(236, 228, 211, 0.14);
+    --hairline-strong: rgba(236, 228, 211, 0.24);
+
+    --rust: #d97a56;
+    --rust-bg: rgba(217, 122, 86, 0.12);
+    --rust-border: rgba(217, 122, 86, 0.4);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 32px -18px rgba(0, 0, 0, 0.55);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: radial-gradient(1200px 700px at 12% -10%, var(--bone-deep), transparent 60%), var(--bone);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: var(--bronze-wash);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--bronze);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+a {
+  color: var(--bronze-deep);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Shell / letterhead                                                     */
+/* ---------------------------------------------------------------------- */
+
+.app-shell {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 56px 24px 96px;
+}
+
+.letterhead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--hairline-strong);
+  margin-bottom: 40px;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.wordmark span {
+  color: var(--bronze);
+}
+
+.tagline {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  text-align: right;
+  max-width: 260px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Hero / pitch                                                           */
+/* ---------------------------------------------------------------------- */
+
+.hero {
+  margin-bottom: 40px;
+}
+
+.hero__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--ink-faint);
+  margin: 0 0 6px;
+}
+
+.hero__headline {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 1.25;
+  color: var(--ink);
+  margin: 0 0 16px;
+  max-width: 22ch;
+}
+
+.hero__body {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  margin: 0 0 20px;
+  max-width: 62ch;
+}
+
+.hero__body em {
+  font-style: normal;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.hero__pillars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Intake form                                                            */
+/* ---------------------------------------------------------------------- */
+
+.intake-form {
+  background: var(--paper-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 28px;
+  margin-bottom: 48px;
+}
+
+.intake-form__title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.field label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+.field textarea,
+.field input {
+  font-family: var(--font-body);
+  /* 16px, not 15 — iOS Safari auto-zooms the viewport on focus for any input
+     under 16px, which is jarring on mobile and this is the one place users type. */
+  font-size: 16px;
+  color: var(--ink);
+  background: var(--paper-glass-strong);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  resize: vertical;
+  color-scheme: light dark;
+}
+
+.field textarea::placeholder,
+.field input::placeholder {
+  color: var(--ink-faint);
+}
+
+.field textarea:focus,
+.field input:focus {
+  border-color: var(--bronze);
+}
+
+.field-hint {
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.btn-primary {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bone);
+  background: linear-gradient(180deg, var(--bronze-bright), var(--bronze-deep));
+  border: 1px solid var(--bronze-deep);
+  border-radius: var(--radius-sm);
+  padding: 12px 22px;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 6px 14px -6px rgba(124, 90, 38, 0.55);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 10px 18px -6px rgba(124, 90, 38, 0.6);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.status-line {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.status-line--error {
+  color: var(--rust);
+}
+
+.error-banner {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--rust);
+  background: var(--rust-bg);
+  border: 1px solid var(--rust-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 20px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Shortlist / results header                                             */
+/* ---------------------------------------------------------------------- */
+
+.shortlist-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.shortlist-header h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.shortlist-header .count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.shortlist-summary {
+  font-size: 14px;
+  color: var(--ink-soft);
+  margin: 0 0 24px;
+}
+
+.shortlist {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.empty-state {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink-faint);
+  border: 1px dashed var(--hairline-strong);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Candidate card                                                         */
+/* ---------------------------------------------------------------------- */
+
+.candidate-card {
+  position: relative;
+  background: var(--paper-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 24px 24px 20px;
+}
+
+.candidate-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.candidate-card__title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.candidate-card__rank {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--bronze);
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.candidate-card__name {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--ink);
+  overflow-wrap: break-word;
+}
+
+.fit-reasoning {
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.6;
+  margin: 14px 0 16px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Confidence hallmark — a stamped mark, not a meter                      */
+/* ---------------------------------------------------------------------- */
+
+.hallmark {
+  flex-shrink: 0;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--font-display);
+  transform: rotate(-4deg);
+}
+
+.hallmark__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  padding: 0 6px;
+}
+
+.hallmark--unproven {
+  border: 1.5px dashed var(--ink-faint);
+  color: var(--ink-faint);
+  opacity: 0.75;
+}
+
+.hallmark--emerging {
+  border: 2px solid var(--ink-soft);
+  color: var(--ink-soft);
+  background: rgba(107, 97, 84, 0.05);
+}
+
+.hallmark--proven {
+  border: 2.5px solid var(--bronze);
+  color: var(--bronze-deep);
+  background: var(--bronze-wash);
+  box-shadow: inset 0 0 0 4px rgba(161, 121, 47, 0.08);
+}
+
+.hallmark--proven::before {
+  content: "";
+  position: absolute;
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  border: 1px solid var(--bronze);
+  opacity: 0.4;
+}
+
+.hallmark--high_confidence {
+  background: radial-gradient(circle at 32% 28%, var(--bronze-bright), var(--bronze-deep) 78%);
+  color: var(--bone);
+  border: 1px solid var(--bronze-deep);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.35),
+    inset 0 -6px 10px rgba(0, 0, 0, 0.25),
+    0 6px 14px -6px rgba(124, 90, 38, 0.6);
+}
+
+.hallmark--high_confidence .hallmark__label {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+}
+
+/* even/odd cards tilt the opposite way so the row doesn't look mechanically repeated */
+.candidate-card:nth-of-type(even) .hallmark {
+  transform: rotate(3deg);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Evidence panel — the receipts                                          */
+/* ---------------------------------------------------------------------- */
+
+.evidence-panel {
+  background: var(--paper-glass-strong);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.evidence-panel__title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  margin: 0 0 10px;
+}
+
+.evidence-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink-soft);
+  padding: 3px 0;
+}
+
+.evidence-line__label {
+  white-space: nowrap;
+  color: var(--ink-soft);
+}
+
+.evidence-line__leader {
+  flex: 1;
+  border-bottom: 1px dotted var(--hairline-strong);
+  transform: translateY(-3px);
+  min-width: 12px;
+}
+
+.evidence-line__value {
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.evidence-line__value--null {
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink-faint);
+}
+
+.evidence-line__value--warn {
+  color: var(--rust);
+}
+
+.callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  border: 1px dashed var(--rust-border);
+  background: var(--rust-bg);
+  color: var(--rust);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin-top: 10px;
+}
+
+.callout__mark {
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Recommended terms                                                      */
+/* ---------------------------------------------------------------------- */
+
+.terms {
+  border-top: 1px solid var(--hairline);
+  padding-top: 14px;
+  margin-top: 4px;
+}
+
+.terms__title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  margin: 0 0 8px;
+}
+
+.terms__split {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+
+.terms__structure {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.terms__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bronze-deep);
+  background: var(--bronze-wash);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+footer.app-footer {
+  margin-top: 64px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Responsive                                                             */
+/* ---------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  .app-shell {
+    padding: 32px 16px 64px;
+  }
+
+  .letterhead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .tagline {
+    text-align: left;
+    max-width: none;
+  }
+
+  .hero__headline {
+    font-size: 25px;
+  }
+
+  .intake-form {
+    padding: 20px;
+  }
+
+  .form-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .shortlist-header {
+    flex-wrap: wrap;
+  }
+
+  .candidate-card {
+    padding: 20px 18px 18px;
+  }
+
+  .candidate-card__head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hallmark {
+    align-self: flex-end;
+    margin-top: -8px;
+  }
+
+  .evidence-panel {
+    padding: 12px 14px;
+  }
+
+  /* The dotted leader between label and value needs width neither has to
+     spare on a phone-width screen — a long label like "Tasks completed, this
+     category" is wider than the whole evidence panel once card + panel
+     padding are subtracted. Drop the leader and let label/value sit in a
+     two-column grid instead, so the label wraps onto its own line(s) rather
+     than overflowing or squeezing the value off the dotted line. */
+  .evidence-line {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 10px;
+    align-items: baseline;
+  }
+
+  .evidence-line__label {
+    white-space: normal;
+  }
+
+  .evidence-line__leader {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary {
+    transition: none;
+  }
+}

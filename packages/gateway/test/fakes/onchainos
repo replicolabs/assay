@@ -1,0 +1,176 @@
+#!/usr/bin/env node
+// Test double for the real `onchainos` binary. Emits canned JSON matching the
+// live-verified shapes in packages/gateway/src/okx/types.ts (captured from the
+// real v4.2.4 binary against OKX's backend during setup — see README §OKX.AI
+// integration), including the {ok:true,data} / {ok:false,error} envelope every
+// command actually uses. Used ONLY when ONCHAINOS_MODE=fake
+// (packages/gateway/src/okx/config.ts) — never the default, never reachable
+// from a "live" config by accident.
+
+const args = process.argv.slice(2);
+const sub = args.slice(0, 2).join(" "); // e.g. "agent search"
+
+function flag(name, fallback) {
+  const i = args.indexOf(`--${name}`);
+  return i !== -1 && args[i + 1] !== undefined ? args[i + 1] : fallback;
+}
+
+const FAKE_AGENTS = [
+  { agentId: "1001", name: "SolWatch Auditor", feedbackRate: 4.6, serviceMinPrice: 20, topService: "Smart Contract Audit", role: 2, roleLabel: "ASP" },
+  { agentId: "1002", name: "QuickAudit Bot", feedbackRate: 3.1, serviceMinPrice: 5, topService: "Smart Contract Audit", role: 2, roleLabel: "ASP" },
+  { agentId: "1003", name: "Jiangsu Weather Oracle", feedbackRate: 4.9, serviceMinPrice: 0.05, topService: "Weather Query", role: 2, roleLabel: "ASP" },
+  { agentId: "1004", name: "Fresh Deploy ASP", feedbackRate: null, serviceMinPrice: 10, topService: "Smart Contract Audit", role: 2, roleLabel: "ASP" }
+];
+
+// service-list shape: {id, serviceName, serviceType, fee, endpoint, serviceDescription} — live-verified.
+const FAKE_SERVICES = {
+  "1001": [{ id: 1, serviceName: "Smart Contract Audit", serviceType: "a2a", fee: "20", endpoint: null, serviceDescription: "Full Solidity/Anchor audit with reentrancy + PDA checks" }],
+  "1002": [{ id: 2, serviceName: "Smart Contract Audit", serviceType: "a2a", fee: "5", endpoint: null, serviceDescription: "Fast automated audit" }],
+  "1003": [{ id: 3, serviceName: "Weather Query", serviceType: "a2mcp", fee: "0.05", endpoint: "https://weather.example/api", serviceDescription: "Real-time regional weather" }],
+  "1004": [{ id: 4, serviceName: "Smart Contract Audit", serviceType: "a2a", fee: "10", endpoint: null, serviceDescription: "New provider, audits Solidity contracts" }]
+};
+
+// agent-search's embedded services[] shape differs slightly: {serviceId, serviceName, feeAmount, feeToken, ...}.
+function searchServicesFor(agentId) {
+  return (FAKE_SERVICES[agentId] ?? []).map((s) => ({
+    serviceId: String(s.id),
+    serviceName: s.serviceName,
+    serviceType: s.serviceType,
+    feeAmount: s.fee,
+    feeToken: "USDT",
+    endpoint: s.endpoint,
+    serviceDescription: s.serviceDescription
+  }));
+}
+
+const FAKE_FEEDBACK = {
+  "1001": [
+    { score: 4.5, reviewerId: "88", role: "user", name: "MyBuyer", date: "2026-06-20", taskHash: "0xaaa1", description: "Caught a real reentrancy bug" },
+    { score: 4.7, reviewerId: "14", role: "user", name: "CryptoPM", date: "2026-06-10", taskHash: "0xaaa2", description: "Thorough, on time" }
+  ],
+  "1002": [
+    { score: 2.0, reviewerId: "22", role: "user", name: "DevOpsAlice", date: "2026-06-18", taskHash: "0xbbb1", description: "Missed an obvious overflow" },
+    { score: 4.0, reviewerId: "31", role: "user", name: "Bo", date: "2026-05-01", taskHash: "0xbbb2", description: "Fine for a quick pass" }
+  ],
+  "1003": [{ score: 5.0, reviewerId: "9", role: "user", name: "WeatherFan", date: "2026-06-25", taskHash: "0xccc1", description: "Accurate" }],
+  "1004": []
+};
+
+function ok(data) {
+  process.stdout.write(JSON.stringify({ ok: true, data }));
+  process.exit(0);
+}
+
+function fail(error, code) {
+  process.stdout.write(JSON.stringify({ ok: false, error, ...(code !== undefined ? { code } : {}) }));
+  process.exit(0); // the real CLI exits 0 even on a business-level {ok:false} error
+}
+
+switch (sub) {
+  case "agent search": {
+    const query = (flag("query", "") || "").toLowerCase();
+    const list = FAKE_AGENTS.filter((a) => !query || a.topService.toLowerCase().includes(query) || a.name.toLowerCase().includes(query)).map((a) => ({
+      agentId: a.agentId,
+      name: a.name,
+      feedbackRate: a.feedbackRate,
+      serviceMinPrice: a.serviceMinPrice,
+      services: searchServicesFor(a.agentId),
+      cells: [
+        { label: "Agent ID", value: `#${a.agentId}` },
+        { label: "Name", value: a.name },
+        { label: "Rating", value: a.feedbackRate ? String(a.feedbackRate) : "—" },
+        { label: "Min price", value: String(a.serviceMinPrice) },
+        { label: "Top service", value: a.topService }
+      ]
+    }));
+    ok({ list, total: list.length });
+    break;
+  }
+  case "agent get-agents": {
+    const ids = String(flag("agent-ids", "")).split(",").filter(Boolean);
+    const result = FAKE_AGENTS.filter((a) => ids.includes(a.agentId)).map((a) => ({
+      agentId: a.agentId,
+      name: a.name,
+      role: a.role,
+      roleLabel: a.roleLabel,
+      status: 1,
+      statusLabel: "active",
+      ownerAddress: `0xowner${a.agentId}`,
+      card: [{ label: "Name", value: a.name }]
+    }));
+    ok(result);
+    break;
+  }
+  case "agent service-list": {
+    const agentId = flag("agent-id", "");
+    if (!FAKE_SERVICES[agentId]) {
+      fail(`agent ${agentId} not found`, 4004);
+      break;
+    }
+    ok({ agentInfo: { agentId }, list: FAKE_SERVICES[agentId] });
+    break;
+  }
+  case "agent feedback-list": {
+    const agentId = flag("agent-id", "");
+    const list = FAKE_FEEDBACK[agentId] ?? [];
+    ok({ list, pageNo: 1, pageSize: 20, total: list.length, totalCount: list.length, distribution: {} });
+    break;
+  }
+  case "agent asp-match": {
+    const providerAgentId = flag("provider-agent-id", null);
+    const candidates = providerAgentId ? FAKE_AGENTS.filter((a) => a.agentId === providerAgentId) : FAKE_AGENTS;
+    const recommendations = candidates.flatMap((a) =>
+      (FAKE_SERVICES[a.agentId] ?? []).map((s) => ({
+        agentId: a.agentId,
+        serviceId: String(s.id),
+        serviceType: s.serviceType,
+        feeToken: "USDT",
+        feeAmount: s.fee,
+        endpoint: s.endpoint
+      }))
+    );
+    ok({ recommendations });
+    break;
+  }
+  case "agent task-search": {
+    ok({ total: 0, page: 1, pageSize: 20, tasks: [] });
+    break;
+  }
+  case "agent task-deliverable-list": {
+    const path = new URL("./deliverable-fixture.json", import.meta.url).pathname;
+    ok({ deliverables: [{ path, originalName: "answer.json", deliverableType: "text", sizeBytes: 128, savedAt: new Date().toISOString() }] });
+    break;
+  }
+  case "agent status": {
+    const jobId = args[2] ?? "fake-job";
+    ok({ jobId, status: "completed", statusCode: 6, title: "Fake canary task", tokenAmount: "10", tokenSymbol: "USDT" });
+    break;
+  }
+  case "agent create-task": {
+    const jobId = `fake-job-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+    ok({ jobId, status: "created", txHash: `0xfaketx${Date.now()}` });
+    break;
+  }
+  case "agent draft": {
+    const action = args[2];
+    if (action === "create") {
+      ok({ jobId: `fake-draft-${Date.now()}` });
+    } else if (action === "publish") {
+      const jobId = args[3] ?? `fake-job-${Date.now()}`;
+      ok({ jobId, status: "created", txHash: `0xfaketx${Date.now()}` });
+    } else {
+      ok({ success: true });
+    }
+    break;
+  }
+  case "agent complete":
+  case "agent reject":
+  case "agent feedback-submit": {
+    ok({ success: true, txHash: `0xfaketx${Date.now()}` });
+    break;
+  }
+  default: {
+    process.stderr.write(`fake onchainos: unhandled subcommand "${sub}"\n`);
+    process.exit(1);
+  }
+}
