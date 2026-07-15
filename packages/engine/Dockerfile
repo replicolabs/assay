@@ -6,7 +6,7 @@
 # On Railway: Root Directory = "." (repo root), Dockerfile Path =
 # "packages/engine/Dockerfile".
 
-FROM rust:1.82-slim-bookworm AS builder
+FROM rust:1-slim-bookworm AS builder
 WORKDIR /app
 
 COPY Cargo.toml Cargo.lock ./
