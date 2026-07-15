@@ -27,8 +27,16 @@ function fixturesForcedOn(): boolean {
   return false;
 }
 
+/**
+ * Frontend and gateway are deployed on separate domains (Vercel + Railway) —
+ * a bare relative path only works when they share an origin. Empty string
+ * (the local-dev default when unset) keeps relative-path behavior for a dev
+ * proxy setup; production (Vercel) sets this to the Railway gateway URL.
+ */
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
+
 async function fetchFromGateway(request: LookupRequest): Promise<Assessment> {
-  const res = await fetch("/v1/web/lookup", {
+  const res = await fetch(`${API_BASE_URL}/v1/web/lookup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request)

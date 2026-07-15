@@ -36,9 +36,12 @@ export function App() {
   return (
     <div className="app-shell">
       <header className="letterhead">
-        <h1 className="wordmark">
-          <span>A</span>ssay
-        </h1>
+        <div className="brand">
+          <img src="/logo-mark.svg" alt="" className="brand__mark" width={36} height={36} />
+          <h1 className="wordmark">
+            <span>A</span>ssay
+          </h1>
+        </div>
         <p className="tagline">Available on OKX.AI marketplace</p>
       </header>
 

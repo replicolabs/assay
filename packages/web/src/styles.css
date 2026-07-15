@@ -125,6 +125,17 @@ a {
   margin-bottom: 40px;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand__mark {
+  display: block;
+  border-radius: 50%;
+}
+
 .wordmark {
   font-family: var(--font-display);
   font-weight: 700;
