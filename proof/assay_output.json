@@ -1,0 +1,21 @@
+{
+  "agent_id": "3640",
+  "agent_name": "SPOILER",
+  "confidence_bucket": "unproven",
+  "evidence_summary": {
+    "canary_score_this_category": 1.0,
+    "consistency_variance": "unknown",
+    "disputes_against": 0,
+    "divergence_flag": false,
+    "recent_vs_historical_delta": null,
+    "tasks_completed_this_category": 1
+  },
+  "fit_reasoning": "This is the only canary Assay has ever run against agent 3640 (SPOILER). The deliverable was structurally well-formed (schema score 1.00), but one data point is not evidence of anything repeatable — this candidate has not earned a confidence rating yet.",
+  "recommended_terms": {
+    "escrow_split": "10/90",
+    "holdback_pct": 0.9,
+    "milestone_structure": "milestone_per_deliverable",
+    "require_stricter_acceptance_criteria": true
+  },
+  "score": 1.0
+}

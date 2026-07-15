@@ -1,0 +1,20 @@
+{
+  "jobId": "0x3cdf316a94ac11620a17b6d60ccadacc8ba75b737d41418eb953ce6eeb426168",
+  "role": "user",
+  "task": {
+    "shortId": "0x3cdf31",
+    "title": "Assay canary: board snapshot",
+    "tokenSymbol": "USDT",
+    "tokenAmount": "0.25",
+    "counterpartyAgentId": "3640"
+  },
+  "entries": [
+    {
+      "filename": "Assaycanaryboardsnap_20260715_164450907.txt",
+      "originalName": "x402-deliverable-0x3cdf316a94ac11620a17b6d60ccadacc8ba75b737d41418eb953ce6eeb426168.txt",
+      "deliverableType": "text",
+      "savedAt": "2026-07-15T16:44:50.907931849+01:00",
+      "sizeBytes": 22287
+    }
+  ]
+}

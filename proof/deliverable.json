@@ -1,0 +1,569 @@
+{
+  "proof_meter": {
+    "called_current_engine": 79,
+    "engine_display_name": "ARGUS",
+    "gate_progress": {
+      "graded": 70,
+      "required": 100,
+      "text": "graded 70/100"
+    },
+    "graded_aggregates": {
+      "confirmed_count": 42,
+      "flat_pnl": -274.529933,
+      "flat_roi": -0.039219,
+      "flat_staked": 7000,
+      "graded": 70,
+      "target": 100,
+      "twist_count": 28,
+      "win_rate": 0.6
+    },
+    "label": "ARGUS · GRADED 70/100",
+    "public_call_count_markets": 211,
+    "public_graded_count_markets": 70,
+    "required_count": 100
+  },
+  "receipts": [
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-genesis-20260708",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "inclusion_proof": {
+          "leaf_count": 24,
+          "leaf_hash": "0xd665c6fd5788d017f4d919d5ef384076855492e14c223c25688d1ce2defb5caf",
+          "leaf_index": 23,
+          "siblings": [
+            {
+              "hash": "0xb1bb2c205a5fc2e19a4613a592dfc35f164b98f89331f061fe73320a81ffccb3",
+              "position": "left"
+            },
+            {
+              "hash": "0x82ddce8ebd503dbe6e38811892efc6410d6d0c714cf365f57422030b9b448dd6",
+              "position": "left"
+            },
+            {
+              "hash": "0x974a4e3e6eef03b5c303944e52289a1605d93277d2038841318f45189c840759",
+              "position": "left"
+            },
+            {
+              "hash": "0xd3a48961a1daf04d8e6a2402dd6cc10afaf8fede7be4e552b4ae16af82cf7253",
+              "position": "right"
+            },
+            {
+              "hash": "0x8173940a8e5cd3d465616c56ae1d92081bcb1818d66abbdb276ba6f22cd230f2",
+              "position": "left"
+            }
+          ],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47"
+      },
+      "called_side": "NO · Bitcoin hits $1m",
+      "commit_hash": "3566bf04f69163f9744b103a06d081d5315dc376f97f46c5664e0d2f0d167b0a",
+      "edge": 0.2222016635279347,
+      "grading_status": {
+        "graded": false,
+        "source": "polymarket_gamma",
+        "status": "awaiting_resolution"
+      },
+      "market_title": "What will happen before GTA VI?",
+      "model_win_probability": 0.7257016635279347,
+      "sealed_price": 0.5035000000000001,
+      "venue": "Polymarket"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-genesis-20260708",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "inclusion_proof": {
+          "leaf_count": 24,
+          "leaf_hash": "0x4404c78c12994e0b9258f7ea0a86cd8b253e8b988caa461af9560e70483192eb",
+          "leaf_index": 20,
+          "siblings": [
+            {
+              "hash": "0x3667fcadc796160dde4d5caaed16b8c11d4de8b0a4d8476e60ca7766e8a81c19",
+              "position": "right"
+            },
+            {
+              "hash": "0x070aa2a9390fd7376cbf4eb4f12e28c9dec19872cfe5bb876ed1dcf717c14780",
+              "position": "right"
+            },
+            {
+              "hash": "0x974a4e3e6eef03b5c303944e52289a1605d93277d2038841318f45189c840759",
+              "position": "left"
+            },
+            {
+              "hash": "0xd3a48961a1daf04d8e6a2402dd6cc10afaf8fede7be4e552b4ae16af82cf7253",
+              "position": "right"
+            },
+            {
+              "hash": "0x8173940a8e5cd3d465616c56ae1d92081bcb1818d66abbdb276ba6f22cd230f2",
+              "position": "left"
+            }
+          ],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47"
+      },
+      "called_side": "NO · Trump out as President",
+      "commit_hash": "cb8d234c58fbf4e2f4c78d2d5055f62d091dca49d9100cf8c3c36b12e93f4640",
+      "edge": 0.22145166352793472,
+      "grading_status": {
+        "graded": false,
+        "source": "polymarket_gamma",
+        "status": "awaiting_resolution"
+      },
+      "market_title": "What will happen before GTA VI?",
+      "model_win_probability": 0.7264516635279348,
+      "sealed_price": 0.505,
+      "venue": "Polymarket"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-genesis-20260708",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "inclusion_proof": {
+          "leaf_count": 24,
+          "leaf_hash": "0xb1bb2c205a5fc2e19a4613a592dfc35f164b98f89331f061fe73320a81ffccb3",
+          "leaf_index": 22,
+          "siblings": [
+            {
+              "hash": "0xd665c6fd5788d017f4d919d5ef384076855492e14c223c25688d1ce2defb5caf",
+              "position": "right"
+            },
+            {
+              "hash": "0x82ddce8ebd503dbe6e38811892efc6410d6d0c714cf365f57422030b9b448dd6",
+              "position": "left"
+            },
+            {
+              "hash": "0x974a4e3e6eef03b5c303944e52289a1605d93277d2038841318f45189c840759",
+              "position": "left"
+            },
+            {
+              "hash": "0xd3a48961a1daf04d8e6a2402dd6cc10afaf8fede7be4e552b4ae16af82cf7253",
+              "position": "right"
+            },
+            {
+              "hash": "0x8173940a8e5cd3d465616c56ae1d92081bcb1818d66abbdb276ba6f22cd230f2",
+              "position": "left"
+            }
+          ],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47"
+      },
+      "called_side": "NO · Jesus Christ returns",
+      "commit_hash": "4f7ac84f3136d0da54a183f7cdd9e033ef14856ae254a93c2f27dd975ca57043",
+      "edge": 0.22145166352793472,
+      "grading_status": {
+        "graded": false,
+        "source": "polymarket_gamma",
+        "status": "awaiting_resolution"
+      },
+      "market_title": "What will happen before GTA VI?",
+      "model_win_probability": 0.7264516635279348,
+      "sealed_price": 0.505,
+      "venue": "Polymarket"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-cycle-20260710T200246Z",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0x6f73e6b3a11909af0d3cc9e42f997212b879550f7ce4ab14ee005748e5236333",
+        "hash": "0x6f73e6b3a11909af0d3cc9e42f997212b879550f7ce4ab14ee005748e5236333",
+        "inclusion_proof": {
+          "leaf_count": 3,
+          "leaf_hash": "0x922d3e6a3542f094db22ec75ff85fda17c76df10accd13d84677374872aa18fe",
+          "leaf_index": 0,
+          "siblings": [
+            {
+              "hash": "0x59de51335b46cce79ff82ec3d3082d52e4f6e14fe0dac2dcebc81da9680f15f5",
+              "position": "right"
+            },
+            {
+              "hash": "0x5fecce11100614259ce12ce931ac6d778775cb14a1a0c524738274f95eb4d870",
+              "position": "right"
+            }
+          ],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0x6f73e6b3a11909af0d3cc9e42f997212b879550f7ce4ab14ee005748e5236333"
+      },
+      "called_side": "No",
+      "commit_hash": "6909e195ab022d69533d7559daad5c005baea743d9dc2bbcc8ad75df678bbab0",
+      "edge": 0.213952,
+      "grading_status": {
+        "graded": false,
+        "source": "awaiting_resolution",
+        "status": "pending"
+      },
+      "market_title": "Bitcoin price on Jul 17, 2026?",
+      "model_win_probability": 0.733952,
+      "sealed_price": 0.52,
+      "venue": "Kalshi"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-cycle-20260709T184755Z",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0x9af78eac1d8cfad4821abf3e8667ccf6af9ad7e81831faf6409abf1ff24ee18f",
+        "hash": "0x9af78eac1d8cfad4821abf3e8667ccf6af9ad7e81831faf6409abf1ff24ee18f",
+        "inclusion_proof": {
+          "leaf_count": 2,
+          "leaf_hash": "0x973e70011f97465924f5b355de1e536ce55bdc083dd90266aa1882858ca533a0",
+          "leaf_index": 0,
+          "siblings": [
+            {
+              "hash": "0x096afe5325a8769736a23079ce399232bc2829eb75786909b2ca5def18f515c2",
+              "position": "right"
+            }
+          ],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0x9af78eac1d8cfad4821abf3e8667ccf6af9ad7e81831faf6409abf1ff24ee18f"
+      },
+      "called_side": "Yes",
+      "commit_hash": "4aee04a5a7ed048e67e6095be3cb1c6cf80beac787cdb3454bf850c0a9196116",
+      "edge": 0.195309,
+      "grading_status": {
+        "graded": false,
+        "source": "awaiting_resolution",
+        "status": "pending"
+      },
+      "market_title": "Will XRP trimmed mean be above $1.20 by 11:59 PM ET on Jul 31, 2026?",
+      "model_win_probability": 0.695309,
+      "sealed_price": 0.5,
+      "venue": "Kalshi"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-genesis-20260708",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "inclusion_proof": {
+          "leaf_count": 24,
+          "leaf_hash": "0x3667fcadc796160dde4d5caaed16b8c11d4de8b0a4d8476e60ca7766e8a81c19",
+          "leaf_index": 21,
+          "siblings": [
+            {
+              "hash": "0x4404c78c12994e0b9258f7ea0a86cd8b253e8b988caa461af9560e70483192eb",
+              "position": "left"
+            },
+            {
+              "hash": "0x070aa2a9390fd7376cbf4eb4f12e28c9dec19872cfe5bb876ed1dcf717c14780",
+              "position": "right"
+            },
+            {
+              "hash": "0x974a4e3e6eef03b5c303944e52289a1605d93277d2038841318f45189c840759",
+              "position": "left"
+            },
+            {
+              "hash": "0xd3a48961a1daf04d8e6a2402dd6cc10afaf8fede7be4e552b4ae16af82cf7253",
+              "position": "right"
+            },
+            {
+              "hash": "0x8173940a8e5cd3d465616c56ae1d92081bcb1818d66abbdb276ba6f22cd230f2",
+              "position": "left"
+            }
+          ],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47"
+      },
+      "called_side": "YES · China invades Taiwan",
+      "commit_hash": "89c3fe1fbdb4ad4317a5454a25c9c5e6feba2806a3d14a198ed9ea327a31cacb",
+      "edge": 0.1928088662790698,
+      "grading_status": {
+        "graded": false,
+        "source": "polymarket_gamma",
+        "status": "awaiting_resolution"
+      },
+      "market_title": "What will happen before GTA VI?",
+      "model_win_probability": 0.6978088662790698,
+      "sealed_price": 0.505,
+      "venue": "Polymarket"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-cycle-20260710T200246Z",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0x6f73e6b3a11909af0d3cc9e42f997212b879550f7ce4ab14ee005748e5236333",
+        "hash": "0x6f73e6b3a11909af0d3cc9e42f997212b879550f7ce4ab14ee005748e5236333",
+        "inclusion_proof": {
+          "leaf_count": 3,
+          "leaf_hash": "0x59de51335b46cce79ff82ec3d3082d52e4f6e14fe0dac2dcebc81da9680f15f5",
+          "leaf_index": 1,
+          "siblings": [
+            {
+              "hash": "0x922d3e6a3542f094db22ec75ff85fda17c76df10accd13d84677374872aa18fe",
+              "position": "left"
+            },
+            {
+              "hash": "0x5fecce11100614259ce12ce931ac6d778775cb14a1a0c524738274f95eb4d870",
+              "position": "right"
+            }
+          ],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0x6f73e6b3a11909af0d3cc9e42f997212b879550f7ce4ab14ee005748e5236333"
+      },
+      "called_side": "Yes",
+      "commit_hash": "857ac380b7e0c7800cf745ac61644cbcdf8a5a147a7ced5ffe45430e79d86774",
+      "edge": 0.190309,
+      "grading_status": {
+        "graded": false,
+        "source": "awaiting_resolution",
+        "status": "pending"
+      },
+      "market_title": "Ethereum price at Jul 17, 2026 at 5pm EDT?",
+      "model_win_probability": 0.7003090000000001,
+      "sealed_price": 0.51,
+      "venue": "Kalshi"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-cycle-20260709T110149Z",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0xd732e161590b07d4cce277f3a9b250a6e077975274a2bb906e4c516a5a34f197",
+        "hash": "0xd732e161590b07d4cce277f3a9b250a6e077975274a2bb906e4c516a5a34f197",
+        "inclusion_proof": {
+          "leaf_count": 1,
+          "leaf_hash": "0x6904bb6c45d2624aa91c9867c30391b28228a58732ec30fb7e8f6d64bc3bb5ba",
+          "leaf_index": 0,
+          "siblings": [],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0xd732e161590b07d4cce277f3a9b250a6e077975274a2bb906e4c516a5a34f197"
+      },
+      "called_side": "No",
+      "commit_hash": "f7f38edb7c3395167a5c8227c04db855203c07e65da5c677772e39b4aa21407a",
+      "edge": 0.188952,
+      "grading_status": {
+        "graded": false,
+        "source": "awaiting_resolution",
+        "status": "pending"
+      },
+      "market_title": "Will BTC trimmed mean be above $67500.00 by 11:59 PM ET on Jul 31, 2026?",
+      "model_win_probability": 0.758952,
+      "sealed_price": 0.57,
+      "venue": "Kalshi"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-genesis-20260708",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "inclusion_proof": {
+          "leaf_count": 24,
+          "leaf_hash": "0xe3244d7a5b62da95f6635f0b0bf529a4713c2c3875df45af2b7921a7e1c45490",
+          "leaf_index": 18,
+          "siblings": [
+            {
+              "hash": "0xc358475e54aeac724660e744e101f523544c61f37556f59f864d7f6ae4af3cd9",
+              "position": "right"
+            },
+            {
+              "hash": "0x9502d5ac2d0d941da5e21291e4ec235803604a6ca9bbbfc6f16a144e9a5e2173",
+              "position": "left"
+            },
+            {
+              "hash": "0x12f9be4aceebdcaea75b958b7ba388965bff1ef7969e07f5252a30d37cd1d024",
+              "position": "right"
+            },
+            {
+              "hash": "0xd3a48961a1daf04d8e6a2402dd6cc10afaf8fede7be4e552b4ae16af82cf7253",
+              "position": "right"
+            },
+            {
+              "hash": "0x8173940a8e5cd3d465616c56ae1d92081bcb1818d66abbdb276ba6f22cd230f2",
+              "position": "left"
+            }
+          ],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47"
+      },
+      "called_side": "YES · New Playboi Carti Album",
+      "commit_hash": "44267a4ec05278ea8fd1e141e4b5268633851a0b3553aa493a6432e5cd3101af",
+      "edge": 0.1878088662790698,
+      "grading_status": {
+        "graded": false,
+        "source": "polymarket_gamma",
+        "status": "awaiting_resolution"
+      },
+      "market_title": "What will happen before GTA VI?",
+      "model_win_probability": 0.7028088662790698,
+      "sealed_price": 0.515,
+      "venue": "Polymarket"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-genesis-20260708",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "inclusion_proof": {
+          "leaf_count": 24,
+          "leaf_hash": "0xc358475e54aeac724660e744e101f523544c61f37556f59f864d7f6ae4af3cd9",
+          "leaf_index": 19,
+          "siblings": [
+            {
+              "hash": "0xe3244d7a5b62da95f6635f0b0bf529a4713c2c3875df45af2b7921a7e1c45490",
+              "position": "left"
+            },
+            {
+              "hash": "0x9502d5ac2d0d941da5e21291e4ec235803604a6ca9bbbfc6f16a144e9a5e2173",
+              "position": "left"
+            },
+            {
+              "hash": "0x12f9be4aceebdcaea75b958b7ba388965bff1ef7969e07f5252a30d37cd1d024",
+              "position": "right"
+            },
+            {
+              "hash": "0xd3a48961a1daf04d8e6a2402dd6cc10afaf8fede7be4e552b4ae16af82cf7253",
+              "position": "right"
+            },
+            {
+              "hash": "0x8173940a8e5cd3d465616c56ae1d92081bcb1818d66abbdb276ba6f22cd230f2",
+              "position": "left"
+            }
+          ],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47"
+      },
+      "called_side": "YES · New Rihanna Album",
+      "commit_hash": "436b3a30a297e2d6958c9a4cb9be2c7433fa061954b02023eacc94aa498175d5",
+      "edge": 0.1878088662790698,
+      "grading_status": {
+        "graded": false,
+        "source": "polymarket_gamma",
+        "status": "awaiting_resolution"
+      },
+      "market_title": "What will happen before GTA VI?",
+      "model_win_probability": 0.7028088662790698,
+      "sealed_price": 0.515,
+      "venue": "Polymarket"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-genesis-20260708",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "inclusion_proof": {
+          "leaf_count": 24,
+          "leaf_hash": "0x514d663a841968da919919819a1d618a87fd13c97278d042bc9883a5f57449d9",
+          "leaf_index": 12,
+          "siblings": [
+            {
+              "hash": "0x48072db76875ae04e9010eef8ae8a44f9491f81dd2bc7fa97fa772fbb248a6ab",
+              "position": "right"
+            },
+            {
+              "hash": "0x9d8679ae92ea63793c0ac5bf244d10fc5bab3fc1b0cff6a26eb6bf9c1ee3dd6b",
+              "position": "right"
+            },
+            {
+              "hash": "0x97a1edbec7491c726e2f3ac9d84f70838e9573611484ba9989119b6eff07a980",
+              "position": "left"
+            },
+            {
+              "hash": "0xaaa44f28cdbd3b5bb9c8a0af7411cb11b3dcecb84cece93e455dce55286b523f",
+              "position": "left"
+            },
+            {
+              "hash": "0x8970c65e7be461a7e2fb7e68dd12efc7ce9cc5db48ab4751413b7d9758cde4ca",
+              "position": "right"
+            }
+          ],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47"
+      },
+      "called_side": "NO · France",
+      "commit_hash": "5654231acf67a609eb06e47ceb870e5948100a689214e0a94b749b858439e1d4",
+      "edge": 0.14950000000000002,
+      "grading_status": {
+        "graded": false,
+        "source": "polymarket_gamma",
+        "status": "awaiting_resolution"
+      },
+      "market_title": "World Cup Winner",
+      "model_win_probability": 0.819,
+      "sealed_price": 0.6695,
+      "venue": "Polymarket"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-cycle-20260714T193840Z",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0xb9df8d74c3bfe07db9b28567766bc4e6b9dbdbf0b6543c493b71e00fa209b6ac",
+        "hash": "0xb9df8d74c3bfe07db9b28567766bc4e6b9dbdbf0b6543c493b71e00fa209b6ac",
+        "inclusion_proof": {
+          "leaf_count": 1,
+          "leaf_hash": "0xb0d102978da1643fa36b72a9d0a5623d24ac2669fe5f7eb4c9c2ea475f296fcd",
+          "leaf_index": 0,
+          "siblings": [],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0xb9df8d74c3bfe07db9b28567766bc4e6b9dbdbf0b6543c493b71e00fa209b6ac"
+      },
+      "called_side": "NO · Spain",
+      "commit_hash": "237c91509918e4489df72d70ee9823ef5f2ef35053bc7dd47912d11938b24640",
+      "edge": 0.1495,
+      "grading_status": {
+        "graded": false,
+        "source": "awaiting_resolution",
+        "status": "pending"
+      },
+      "market_title": "World Cup Winner",
+      "model_win_probability": 0.8059999999999999,
+      "sealed_price": 0.6565,
+      "venue": "Polymarket"
+    },
+    {
+      "batch_anchor": {
+        "batch_id": "xlayer-genesis-20260708",
+        "explorer_url": "https://www.oklink.com/x-layer/evm/tx/0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47",
+        "inclusion_proof": {
+          "leaf_count": 24,
+          "leaf_hash": "0xb31d69f3b2224b6be5455869a14c662c542e177bbb4c0ff6d9a7a42873db7d59",
+          "leaf_index": 11,
+          "siblings": [
+            {
+              "hash": "0x19c337b1d717ae2fea90087fbd0e43ba0d59e4943153b3b83d091d18b61355ea",
+              "position": "left"
+            },
+            {
+              "hash": "0xd2e5dabf8397b9216849ac50e9eec9f99fbd559e67a783ba80388dbed3ab20d8",
+              "position": "left"
+            },
+            {
+              "hash": "0xc3d07f31303f0513d58027ec03bd2d03f9b8907cebb6e721add1aab10f81cb3a",
+              "position": "right"
+            },
+            {
+              "hash": "0xaaa44f28cdbd3b5bb9c8a0af7411cb11b3dcecb84cece93e455dce55286b523f",
+              "position": "left"
+            },
+            {
+              "hash": "0x8970c65e7be461a7e2fb7e68dd12efc7ce9cc5db48ab4751413b7d9758cde4ca",
+              "position": "right"
+            }
+          ],
+          "version": "spoiler-merkle-v1"
+        },
+        "transaction_hash": "0x2277bedaaf28da485a0c5d45a99a8ac3ccb99bd3c857d89128fb30e33aef8c47"
+      },
+      "called_side": "NO · England",
+      "commit_hash": "62bbda21148e947068686d8791eb39e8e2582f413e64738caca8c36becd812d7",
+      "edge": 0.025140909090909047,
+      "grading_status": {
+        "graded": false,
+        "source": "pending_resolution_feed",
+        "status": "awaiting_resolution"
+      },
+      "market_title": "World Cup Winner",
+      "model_win_probability": 0.956640909090909,
+      "sealed_price": 0.9315,
+      "venue": "Polymarket"
+    }
+  ]
+}
