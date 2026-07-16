@@ -92,6 +92,8 @@ export const AgentDetailSchema = z
     roleLabel: z.string().optional(),
     status: z.union([z.string(), z.number()]).optional(),
     statusLabel: z.string().optional(),
+    /** 1 = online, 2 = offline — live-verified. Not documented in the skill docs. */
+    onlineStatus: z.number().optional(),
     ownerAddress: z.string().optional(),
     card: z.array(z.object({ label: z.string(), value: z.string() })).optional()
   })
@@ -127,13 +129,23 @@ export const AgentServiceSchema = z
   }));
 export type AgentService = z.infer<typeof AgentServiceSchema>;
 
+// Live-verified (2026-07-15, against agent 2993 — the first time this method
+// was ever actually exercised through the real client rather than ad-hoc
+// parsing): `data` is an ARRAY containing one `{agentInfo, list}` object, not
+// the bare object itself. Everything upstream of this schema (including the
+// earlier "live-verified" comment above) had only ever been checked by
+// manually indexing `data[0]` in throwaway scripts — the schema itself was
+// wrong the whole time, just never exercised until now.
 export const AgentServiceListResponseSchema = z
-  .object({
-    agentInfo: z.unknown().optional(),
-    list: z.array(AgentServiceSchema)
-  })
-  .passthrough()
-  .transform((v) => v.list);
+  .array(
+    z
+      .object({
+        agentInfo: z.unknown().optional(),
+        list: z.array(AgentServiceSchema)
+      })
+      .passthrough()
+  )
+  .transform((v) => v[0]?.list ?? []);
 
 // --- `agent feedback-list --agent-id` ---------------------------------------
 // CLI pre-converts wire score to 0.00-5.00 stars (docs: "already-converted 0.00-5.00 score").
@@ -268,3 +280,34 @@ export const AckResponseSchema = z
     txHash: z.string().optional()
   })
   .passthrough();
+
+// --- `agent x402-check` ------------------------------------------------------
+// Live-verified: acceptsJson is a JSON *string* (needs re-parsing), not a
+// nested object — the CLI passes it straight through as the raw HTTP 402
+// body's `accepts` array, serialized.
+export const X402CheckResponseSchema = z
+  .object({
+    valid: z.boolean(),
+    acceptsJson: z.string(),
+    amountHuman: z.number().optional(),
+    amountMinimal: z.string().optional(),
+    asset: z.string().optional(),
+    payTo: z.string().optional(),
+    tokenSymbol: z.string().optional()
+  })
+  .passthrough();
+export type X402CheckResponse = z.infer<typeof X402CheckResponseSchema>;
+
+// --- `agent task-402-pay` ----------------------------------------------------
+// Live-verified: the deliverable comes back inline as `replayBody` in the
+// same response that signs and broadcasts payment — x402 settles and
+// delivers atomically, unlike escrow's create -> accept -> submit -> complete
+// lifecycle. `deliverableSavedPath` confirms the CLI also persisted it
+// locally, same as the escrow path's task-deliverable-list mechanism.
+export const Task402PayResponseSchema = z
+  .object({
+    deliverableSavedPath: z.string().optional(),
+    replayBody: z.unknown().optional()
+  })
+  .passthrough();
+export type Task402PayResponse = z.infer<typeof Task402PayResponseSchema>;

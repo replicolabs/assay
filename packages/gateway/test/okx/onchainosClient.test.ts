@@ -81,4 +81,44 @@ describe("OnchainosClient against the fake CLI", () => {
     const badClient = new OnchainosClient({ mode: "live", bin: "/nonexistent/onchainos-binary", timeoutMs: 5000 });
     await expect(badClient.searchAgents("x")).rejects.toThrow(/not found/);
   });
+
+  it("fetches agent detail with onlineStatus, for the dispatch preflight check", async () => {
+    const [online] = await client.getAgents(["1001"]);
+    const [offline] = await client.getAgents(["1005"]);
+    expect(online?.onlineStatus).toBe(1);
+    expect(offline?.onlineStatus).toBe(2);
+  });
+
+  it("x402-check returns a parseable acceptsJson string, not a nested object", async () => {
+    const check = await client.x402Check("https://x402.example/api/lookup");
+    expect(check.valid).toBe(true);
+    expect(() => JSON.parse(check.acceptsJson)).not.toThrow();
+    const accepts = JSON.parse(check.acceptsJson);
+    expect(Array.isArray(accepts)).toBe(true);
+    expect(accepts[0]).toHaveProperty("payTo");
+  });
+
+  it("falls back to regex extraction when a command returns pretty console text instead of JSON", async () => {
+    // Live-verified quirk: the same command with identical args has been observed
+    // returning both JSON and human-readable text ("✓ Draft saved (jobId: ...)")
+    // across different runs — this must not surface as a hard parse failure.
+    const draft = await client.draftCreate({
+      title: "PRETTY_TEXT_TEST",
+      description: "irrelevant",
+      descriptionSummary: "irrelevant"
+    });
+    expect(draft.jobId).toBe("0xfa4e9012");
+  });
+
+  it("task-402-pay returns the deliverable inline via replayBody", async () => {
+    const paid = await client.task402Pay("fake-job-x402", {
+      providerAgentId: "1006",
+      accepts: JSON.stringify([{ amount: "50000", asset: "0xfakeusdt", network: "eip155:196", payTo: "0xfakepayto", scheme: "exact" }]),
+      endpoint: "https://x402.example/api/lookup",
+      tokenSymbol: "USDT",
+      tokenAmount: "0.05"
+    });
+    expect(paid.replayBody).toBeTruthy();
+    expect(paid.deliverableSavedPath).toBeTruthy();
+  });
 });

@@ -43,8 +43,12 @@ pub struct ScoredPoint {
 }
 
 pub async fn canary_score_points(pool: &PgPool, agent_id: Uuid, skill_category_id: &str) -> Result<Vec<ScoredPoint>, sqlx::Error> {
+    // Postgres's extract() returns numeric, not double precision, so an
+    // explicit ::float8 cast is required for sqlx's f64 decode to succeed —
+    // live-verified: this only surfaced once real outcome/canary rows
+    // existed to decode for the first time.
     sqlx::query_as::<_, ScoredPoint>(
-        "select score, extract(epoch from (now() - created_at)) / 86400.0 as age_days
+        "select score, (extract(epoch from (now() - created_at)) / 86400.0)::float8 as age_days
          from canary_results
          where agent_id = $1 and skill_category_id = $2",
     )
@@ -66,7 +70,7 @@ pub struct OutcomeRow {
 pub async fn outcome_points(pool: &PgPool, agent_id: Uuid, skill_category_id: &str) -> Result<Vec<OutcomeRow>, sqlx::Error> {
     sqlx::query_as::<_, OutcomeRow>(
         "select resolution, requester_wallet_address, escrow_amount, review_score,
-                extract(epoch from (now() - occurred_at)) / 86400.0 as age_days
+                (extract(epoch from (now() - occurred_at)) / 86400.0)::float8 as age_days
          from outcome_ledger_entries
          where agent_id = $1 and (skill_category_id = $2 or skill_category_id is null)",
     )

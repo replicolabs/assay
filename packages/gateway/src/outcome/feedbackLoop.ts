@@ -14,6 +14,15 @@ import { TERMINAL_TASK_STATUS_CODES, type TaskStatusCode } from "../okx/types.js
  */
 
 const RESOLUTION_BY_STATUS: Record<string, "released_clean" | "disputed_for_agent" | "disputed_against_agent" | "abandoned"> = {
+  // Live-verified: `agent status <jobId>` always returns pretty console text
+  // (never JSON) for this command, so taskStatus() resolves it via the
+  // extractPrettyTextFields fallback. That text prints "Task status: complete"
+  // (no trailing "d") — a real mismatch with TASK_STATUS_BY_CODE's code-6
+  // label "completed", which was the assumed source for this map before any
+  // real terminal task had been observed. Both are kept since a future JSON
+  // response (if the binary ever emits one for this command) would use the
+  // code-derived "completed" spelling instead.
+  complete: "released_clean",
   completed: "released_clean",
   close: "abandoned",
   expired: "abandoned",
@@ -90,7 +99,19 @@ export async function reconcileOne(client: OnchainosClient, db: Kysely<Database>
   const isTerminal = TERMINAL_TASK_STATUS_CODES.has(code as TaskStatusCode) || status.status in RESOLUTION_BY_STATUS;
   if (!isTerminal) return "pending";
 
-  const resolution = RESOLUTION_BY_STATUS[status.status] ?? "abandoned";
+  const mapped = RESOLUTION_BY_STATUS[status.status];
+  if (!mapped) {
+    // Unverified assumption worth surfacing loudly rather than silently
+    // guessing "abandoned": RESOLUTION_BY_STATUS's status vocabulary was
+    // never confirmed against a real terminal task, and this codebase has
+    // repeatedly found live OKX.AI behavior diverging from what was assumed
+    // (envelope shape, serviceId requirement, amount units). A status this
+    // doesn't recognize could just as easily be a real success being
+    // mischaracterized as abandoned.
+    // eslint-disable-next-line no-console
+    console.warn(`[feedbackLoop] unrecognized terminal task status "${status.status}" for job ${job.jobId} — recording as "abandoned" by default, but this mapping has not been verified against live data.`);
+  }
+  const resolution = mapped ?? "abandoned";
 
   await db
     .insertInto("outcome_ledger_entries")

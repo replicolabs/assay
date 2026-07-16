@@ -86,7 +86,14 @@ fn resolution_score(resolution: &str, review_score: Option<f64>) -> f64 {
         "disputed_for_agent" => 0.7,
         "disputed_against_agent" => 0.0,
         "abandoned" => 0.2,
-        _ => 0.5,
+        other => {
+            // A neutral 0.5 is a reasonable *default*, but silently applying it
+            // to a resolution string nothing wrote on purpose can mask a real
+            // mismatch between what feedbackLoop.ts persists and what this
+            // function expects — surface it instead of absorbing it quietly.
+            tracing::warn!(resolution = other, "unrecognized outcome_ledger resolution — scoring it as neutral (0.5); this likely indicates a mismatch with feedbackLoop.ts's resolution vocabulary");
+            0.5
+        }
     }
 }
 

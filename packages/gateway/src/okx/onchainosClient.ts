@@ -19,8 +19,10 @@ import {
   DraftResponseSchema,
   EnvelopeSchema,
   FeedbackListResponseSchema,
+  Task402PayResponseSchema,
   TaskSearchResponseSchema,
   TaskStatusSchema,
+  X402CheckResponseSchema,
   type AgentDetail,
   type AgentSearchResponse,
   type AgentService,
@@ -29,8 +31,10 @@ import {
   type Deliverable,
   type DraftResponse,
   type FeedbackItem,
+  type Task402PayResponse,
   type TaskSearchResponse,
-  type TaskStatus
+  type TaskStatus,
+  type X402CheckResponse
 } from "./types.js";
 
 /**
@@ -169,6 +173,7 @@ export class OnchainosClient {
     budget?: string;
     maxBudget?: string;
     currency?: "USDT" | "USDG";
+    paymentMode?: "escrow" | "x402";
   }): Promise<DraftResponse> {
     const args = [
       "agent",
@@ -187,6 +192,7 @@ export class OnchainosClient {
     if (params.budget) args.push("--budget", params.budget);
     if (params.maxBudget) args.push("--max-budget", params.maxBudget);
     if (params.currency) args.push("--currency", params.currency);
+    if (params.paymentMode) args.push("--payment-mode", params.paymentMode);
     return this.run(args, DraftResponseSchema);
   }
 
@@ -200,6 +206,47 @@ export class OnchainosClient {
 
   async reject(jobId: string, reason: string): Promise<void> {
     await this.run(["agent", "reject", jobId, "--reason", reason], AckResponseSchema);
+  }
+
+  // --- x402 (Assay acting as payer against an A2MCP provider's endpoint) -----
+
+  async x402Check(endpoint: string, opts: { agentId?: string; body?: string } = {}): Promise<X402CheckResponse> {
+    const args = ["agent", "x402-check", "--endpoint", endpoint];
+    if (opts.agentId) args.push("--agent-id", opts.agentId);
+    if (opts.body) args.push("--body", opts.body);
+    return this.run(args, X402CheckResponseSchema);
+  }
+
+  async task402Pay(
+    jobId: string,
+    params: {
+      providerAgentId: string;
+      /** Raw `accepts` array JSON string, verbatim from x402Check's `acceptsJson`. */
+      accepts: string;
+      endpoint: string;
+      tokenSymbol: string;
+      /** Human-readable amount (e.g. "0.25"), NOT minimal units — live-verified. */
+      tokenAmount: string;
+      from?: string;
+    }
+  ): Promise<Task402PayResponse> {
+    const args = [
+      "agent",
+      "task-402-pay",
+      jobId,
+      "--provider-agent-id",
+      params.providerAgentId,
+      "--accepts",
+      params.accepts,
+      "--endpoint",
+      params.endpoint,
+      "--token-symbol",
+      params.tokenSymbol,
+      "--token-amount",
+      params.tokenAmount
+    ];
+    if (params.from) args.push("--from", params.from);
+    return this.run(args, Task402PayResponseSchema);
   }
 
   async feedbackSubmit(params: {
@@ -234,7 +281,21 @@ export class OnchainosClient {
       try {
         parsed = JSON.parse(raw);
       } catch (cause) {
-        throw new OnchainosParseError(args, raw, cause);
+        // Live-verified: some commands (create-task, draft create, draft
+        // publish) non-deterministically print human-readable console text
+        // ("✓ Draft saved (jobId: 0x...)") instead of JSON — the *same*
+        // command with identical arguments has been observed returning both
+        // formats across different runs, so this isn't a per-command fixed
+        // quirk to special-case, it's a real formatting inconsistency in the
+        // binary itself. Falls back to regex-extracting jobId/txHash/status
+        // from the pretty text rather than failing a call that actually
+        // succeeded server-side (this is often caught *after* a real
+        // on-chain broadcast already happened).
+        const fallback = extractPrettyTextFields(raw);
+        if (!fallback) {
+          throw new OnchainosParseError(args, raw, cause);
+        }
+        parsed = { ok: true, data: fallback };
       }
 
       // Every onchainos command wraps its output as {ok:true, data} or
@@ -274,4 +335,18 @@ export class OnchainosClient {
       });
     });
   }
+}
+
+/**
+ * Extracts jobId/txHash/status from human-readable console output like
+ * "✓ Draft saved (jobId: 0x...)" or the multi-line create-task confirmation
+ * block. Returns null (not a fallback match) if no jobId pattern is found at
+ * all — callers treat that as a genuine parse failure, not this quirk.
+ */
+function extractPrettyTextFields(raw: string): { jobId: string; txHash?: string; status?: string } | null {
+  const jobId = raw.match(/jobId:\s*(0x[a-fA-F0-9]+)/)?.[1];
+  if (!jobId) return null;
+  const txHash = raw.match(/txHash:\s*(0x[a-fA-F0-9]+)/)?.[1];
+  const status = raw.match(/^Task status:\s*(\S+)/m)?.[1];
+  return { jobId, ...(txHash ? { txHash } : {}), ...(status ? { status } : {}) };
 }

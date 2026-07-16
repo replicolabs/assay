@@ -16,10 +16,12 @@ function flag(name, fallback) {
 }
 
 const FAKE_AGENTS = [
-  { agentId: "1001", name: "SolWatch Auditor", feedbackRate: 4.6, serviceMinPrice: 20, topService: "Smart Contract Audit", role: 2, roleLabel: "ASP" },
-  { agentId: "1002", name: "QuickAudit Bot", feedbackRate: 3.1, serviceMinPrice: 5, topService: "Smart Contract Audit", role: 2, roleLabel: "ASP" },
-  { agentId: "1003", name: "Jiangsu Weather Oracle", feedbackRate: 4.9, serviceMinPrice: 0.05, topService: "Weather Query", role: 2, roleLabel: "ASP" },
-  { agentId: "1004", name: "Fresh Deploy ASP", feedbackRate: null, serviceMinPrice: 10, topService: "Smart Contract Audit", role: 2, roleLabel: "ASP" }
+  { agentId: "1001", name: "SolWatch Auditor", feedbackRate: 4.6, serviceMinPrice: 20, topService: "Smart Contract Audit", role: 2, roleLabel: "ASP", onlineStatus: 1 },
+  { agentId: "1002", name: "QuickAudit Bot", feedbackRate: 3.1, serviceMinPrice: 5, topService: "Smart Contract Audit", role: 2, roleLabel: "ASP", onlineStatus: 1 },
+  { agentId: "1003", name: "Jiangsu Weather Oracle", feedbackRate: 4.9, serviceMinPrice: 0.05, topService: "Weather Query", role: 2, roleLabel: "ASP", onlineStatus: 1 },
+  { agentId: "1004", name: "Fresh Deploy ASP", feedbackRate: null, serviceMinPrice: 10, topService: "Smart Contract Audit", role: 2, roleLabel: "ASP", onlineStatus: 1 },
+  { agentId: "1005", name: "Offline ASP", feedbackRate: 4.0, serviceMinPrice: 5, topService: "Smart Contract Audit", role: 2, roleLabel: "ASP", onlineStatus: 2 },
+  { agentId: "1006", name: "X402 Pay-Per-Call ASP", feedbackRate: 4.2, serviceMinPrice: 0.05, topService: "Quick Lookup", role: 2, roleLabel: "ASP", onlineStatus: 1 }
 ];
 
 // service-list shape: {id, serviceName, serviceType, fee, endpoint, serviceDescription} — live-verified.
@@ -27,7 +29,8 @@ const FAKE_SERVICES = {
   "1001": [{ id: 1, serviceName: "Smart Contract Audit", serviceType: "a2a", fee: "20", endpoint: null, serviceDescription: "Full Solidity/Anchor audit with reentrancy + PDA checks" }],
   "1002": [{ id: 2, serviceName: "Smart Contract Audit", serviceType: "a2a", fee: "5", endpoint: null, serviceDescription: "Fast automated audit" }],
   "1003": [{ id: 3, serviceName: "Weather Query", serviceType: "a2mcp", fee: "0.05", endpoint: "https://weather.example/api", serviceDescription: "Real-time regional weather" }],
-  "1004": [{ id: 4, serviceName: "Smart Contract Audit", serviceType: "a2a", fee: "10", endpoint: null, serviceDescription: "New provider, audits Solidity contracts" }]
+  "1004": [{ id: 4, serviceName: "Smart Contract Audit", serviceType: "a2a", fee: "10", endpoint: null, serviceDescription: "New provider, audits Solidity contracts" }],
+  "1006": [{ id: 6, serviceName: "Quick Lookup", serviceType: "a2mcp", fee: "0.05", endpoint: "https://x402.example/api/lookup", serviceDescription: "Pay-per-call lookup" }]
 };
 
 // agent-search's embedded services[] shape differs slightly: {serviceId, serviceName, feeAmount, feeToken, ...}.
@@ -95,6 +98,7 @@ switch (sub) {
       roleLabel: a.roleLabel,
       status: 1,
       statusLabel: "active",
+      onlineStatus: a.onlineStatus,
       ownerAddress: `0xowner${a.agentId}`,
       card: [{ label: "Name", value: a.name }]
     }));
@@ -107,7 +111,7 @@ switch (sub) {
       fail(`agent ${agentId} not found`, 4004);
       break;
     }
-    ok({ agentInfo: { agentId }, list: FAKE_SERVICES[agentId] });
+    ok([{ agentInfo: { agentId }, list: FAKE_SERVICES[agentId] }]);
     break;
   }
   case "agent feedback-list": {
@@ -143,6 +147,13 @@ switch (sub) {
   }
   case "agent status": {
     const jobId = args[2] ?? "fake-job";
+    // Live-verified: `agent status` always returns pretty console text, never
+    // JSON, and prints "Task status: complete" (no trailing "d"). This magic
+    // jobId reproduces that exact real shape for reconcileOne's fallback path.
+    if (jobId === "0xdeadbeefcafe") {
+      process.stdout.write(`Task status: complete\n  jobId:    ${jobId}\n  title:    Fake canary task\n  budget:   10 USDT\n`);
+      process.exit(0);
+    }
     ok({ jobId, status: "completed", statusCode: 6, title: "Fake canary task", tokenAmount: "10", tokenSymbol: "USDT" });
     break;
   }
@@ -154,6 +165,13 @@ switch (sub) {
   case "agent draft": {
     const action = args[2];
     if (action === "create") {
+      // Live-verified: draft create sometimes returns pretty console text
+      // instead of JSON, non-deterministically. Magic title triggers that
+      // path here so the client's fallback parser has deterministic coverage.
+      if (flag("title", "") === "PRETTY_TEXT_TEST") {
+        process.stdout.write("✓ Draft saved (jobId: 0xfa4e9012)\n");
+        process.exit(0);
+      }
       ok({ jobId: `fake-draft-${Date.now()}` });
     } else if (action === "publish") {
       const jobId = args[3] ?? `fake-job-${Date.now()}`;
@@ -167,6 +185,19 @@ switch (sub) {
   case "agent reject":
   case "agent feedback-submit": {
     ok({ success: true, txHash: `0xfaketx${Date.now()}` });
+    break;
+  }
+  case "agent x402-check": {
+    const endpoint = flag("endpoint", "");
+    const accepts = [{ amount: "50000", asset: "0xfakeusdt", network: "eip155:196", payTo: "0xfakepayto", scheme: "exact" }];
+    ok({ valid: true, acceptsJson: JSON.stringify(accepts), amountHuman: 0.05, amountMinimal: "50000", asset: "0xfakeusdt", payTo: "0xfakepayto", tokenSymbol: "USDT", endpoint });
+    break;
+  }
+  case "agent task-402-pay": {
+    ok({
+      deliverableSavedPath: "/fake/path/deliverable.json",
+      replayBody: { fakeDeliverable: true, receivedAt: new Date().toISOString() }
+    });
     break;
   }
   default: {
