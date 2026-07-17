@@ -121,4 +121,8 @@ describe("OnchainosClient against the fake CLI", () => {
     expect(paid.replayBody).toBeTruthy();
     expect(paid.deliverableSavedPath).toBeTruthy();
   });
+
+  it("heartbeat resolves without throwing", async () => {
+    await expect(client.heartbeat(196)).resolves.toBeUndefined();
+  });
 });

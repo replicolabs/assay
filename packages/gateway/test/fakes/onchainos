@@ -187,6 +187,11 @@ switch (sub) {
     ok({ success: true, txHash: `0xfaketx${Date.now()}` });
     break;
   }
+  case "agent heartbeat": {
+    // Live-verified real shape: {ok:true, data:[]}.
+    ok([]);
+    break;
+  }
   case "agent x402-check": {
     const endpoint = flag("endpoint", "");
     const accepts = [{ amount: "50000", asset: "0xfakeusdt", network: "eip155:196", payTo: "0xfakepayto", scheme: "exact" }];

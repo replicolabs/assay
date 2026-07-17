@@ -281,6 +281,11 @@ export const AckResponseSchema = z
   })
   .passthrough();
 
+// --- `agent heartbeat` -------------------------------------------------------
+// Live-verified: returns {ok:true, data:[]} — an empty array, not an object.
+// We only care that the call succeeded (didn't throw), not its payload shape.
+export const HeartbeatResponseSchema = z.unknown();
+
 // --- `agent x402-check` ------------------------------------------------------
 // Live-verified: acceptsJson is a JSON *string* (needs re-parsing), not a
 // nested object — the CLI passes it straight through as the raw HTTP 402

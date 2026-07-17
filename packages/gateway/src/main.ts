@@ -5,10 +5,12 @@ import { EngineClient } from "./engine/engineClient.js";
 import { AnthropicLLMClient, NullLLMClient } from "./intake/llmClient.js";
 import { OnchainosClient } from "./okx/onchainosClient.js";
 import { loadOnchainosConfig } from "./okx/config.js";
+import { startHeartbeatLoop } from "./okx/heartbeatLoop.js";
 import type { X402Config } from "./okx/payments.js";
 
 function loadDeps(): AppDeps {
-  const client = new OnchainosClient(loadOnchainosConfig());
+  const onchainosConfig = loadOnchainosConfig();
+  const client = new OnchainosClient(onchainosConfig);
   const db = getDb();
   const engine = new EngineClient();
   const llm = process.env.ANTHROPIC_API_KEY ? new AnthropicLLMClient() : new NullLLMClient();
@@ -18,6 +20,10 @@ function loadDeps(): AppDeps {
     payToAddress: process.env.ASSAY_ASP_PAYOUT_ADDRESS ?? "",
     assetAddress: process.env.X402_ASSET_ADDRESS ?? "",
     priceAtomic: process.env.X402_LOOKUP_PRICE_ATOMIC ?? "10000", // 0.01 USDT at 6 decimals, by default
+    // Live-verified EIP-712 domain for XLayer USDT (USD₮0) via a real
+    // `agent x402-check` against another listed A2MCP service.
+    assetName: process.env.X402_ASSET_NAME ?? "USD₮0",
+    assetVersion: process.env.X402_ASSET_VERSION ?? "1",
     facilitatorUrl: process.env.PAYMENT_FACILITATOR_URL
   };
 
@@ -29,6 +35,14 @@ function loadDeps(): AppDeps {
 async function main() {
   const deps = loadDeps();
   const app = buildApp(deps);
+
+  // Fake mode's test double doesn't implement `agent heartbeat` — only run
+  // this against the real CLI/backend.
+  if (loadOnchainosConfig().mode === "live") {
+    const chainIndex = Number(deps.x402.network.split(":")[1] ?? "196");
+    startHeartbeatLoop(deps.client, chainIndex);
+  }
+
   // GATEWAY_HTTP_ADDR wins when set; falls back to Railway's PORT convention
   // (this service gets a public Railway domain, so Railway's assigned PORT is
   // what its edge proxy actually targets), then a plain local-dev default.

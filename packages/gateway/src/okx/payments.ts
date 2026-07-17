@@ -1,9 +1,13 @@
 /**
  * Assay's own x402 compliance as a *seller* — the A2MCP fast-lookup endpoint
  * must itself emit a valid HTTP 402 challenge so peer agents can pay it,
- * per the OKX Agent Payments Protocol (`accepts`-based v1, since that's the
- * scheme documented end-to-end in okx-agent-payments-protocol/references/
- * accepts-schemes.md without needing a channel/session state machine).
+ * per the OKX Agent Payments Protocol (`accepts`-based v2, delivered via the
+ * `PAYMENT-REQUIRED` header — live-verified against a real, currently-listed
+ * XLayer A2MCP service via `onchainos agent x402-check`, which returned
+ * x402Version:2 with `amount`/`extra.name`/`extra.version` fields, not the
+ * legacy v1 body shape (`maxAmountRequired`, no `extra`) this module used to
+ * emit. Rejection reason from OKX's own review confirmed the mismatch:
+ * "This Agent has not passed x402 standard validation."
  *
  * Honest scope boundary: this module emits a spec-shaped 402 challenge and
  * does presence/structural checks on a replayed `X-PAYMENT` header, but does
@@ -17,16 +21,15 @@
  */
 
 export interface X402Challenge {
-  x402Version: 1;
+  x402Version: 2;
+  resource: string;
   accepts: Array<{
     scheme: "exact";
     network: string;
-    maxAmountRequired: string;
-    resource: string;
-    description: string;
-    mimeType: string;
-    payTo: string;
+    amount: string;
     asset: string;
+    payTo: string;
+    extra: { name: string; version: string };
     maxTimeoutSeconds: number;
   }>;
 }
@@ -36,22 +39,26 @@ export interface X402Config {
   payToAddress: string; // Assay's own ASP wallet
   assetAddress: string; // USDT/USDG contract address on that network
   priceAtomic: string; // base-unit price for one /v1/lookup call
+  // EIP-712 domain of the asset token, required by the `exact` scheme's
+  // EIP-3009 signing path (accepts[].extra) — live-verified real values for
+  // XLayer USDT are name:"USD₮0", version:"1".
+  assetName: string;
+  assetVersion: string;
   facilitatorUrl?: string;
 }
 
 export function buildChallenge(config: X402Config, resource: string): X402Challenge {
   return {
-    x402Version: 1,
+    x402Version: 2,
+    resource,
     accepts: [
       {
         scheme: "exact",
         network: config.network,
-        maxAmountRequired: config.priceAtomic,
-        resource,
-        description: "Assay ranked-shortlist lookup (A2MCP)",
-        mimeType: "application/json",
-        payTo: config.payToAddress,
+        amount: config.priceAtomic,
         asset: config.assetAddress,
+        payTo: config.payToAddress,
+        extra: { name: config.assetName, version: config.assetVersion },
         maxTimeoutSeconds: 60
       }
     ]

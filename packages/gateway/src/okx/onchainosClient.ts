@@ -19,6 +19,7 @@ import {
   DraftResponseSchema,
   EnvelopeSchema,
   FeedbackListResponseSchema,
+  HeartbeatResponseSchema,
   Task402PayResponseSchema,
   TaskSearchResponseSchema,
   TaskStatusSchema,
@@ -66,6 +67,18 @@ export class OnchainosClient {
 
   async listServices(agentId: string): Promise<AgentService[]> {
     return this.run(["agent", "service-list", "--agent-id", agentId], AgentServiceListResponseSchema);
+  }
+
+  /**
+   * Reports online status. Live-verified: our own ASP identity (5586) went
+   * offline (onlineStatus:2) with no code anywhere calling this — OKX's own
+   * docs describe it as "auto-scheduled by runtime", but that only applies to
+   * whatever hosts an interactive CLI session, not a stateless child_process
+   * wrapper like this one. Nothing else schedules it for us. See
+   * heartbeatLoop.ts for the periodic caller.
+   */
+  async heartbeat(chainIndex: number): Promise<void> {
+    await this.run(["agent", "heartbeat", "--chain-index", String(chainIndex)], HeartbeatResponseSchema);
   }
 
   async listFeedback(agentId: string, page = 1): Promise<FeedbackItem[]> {
