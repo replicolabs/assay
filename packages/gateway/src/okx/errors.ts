@@ -19,9 +19,18 @@ export class OnchainosExecError extends Error {
   constructor(
     public readonly command: string[],
     public readonly exitCode: number | null,
-    public readonly stderr: string
+    public readonly stderr: string,
+    public readonly stdout: string = ""
   ) {
-    super(`onchainos ${command.join(" ")} exited ${exitCode}: ${stderr.slice(0, 2000)}`);
+    // Live-verified: on a non-zero exit the CLI's actual error text often
+    // lands on stdout, not stderr (e.g. a validation failure printed as part
+    // of its normal pretty-text output) — omitting it here previously meant
+    // every non-zero-exit failure surfaced as a useless generic message
+    // ("Command failed: <the command itself>"), discovered only once a real
+    // `agent contact-user` failure in production carried zero diagnostic
+    // value.
+    const detail = [stderr, stdout].filter(Boolean).join(" | stdout: ").slice(0, 2000);
+    super(`onchainos ${command.join(" ")} exited ${exitCode}: ${detail}`);
     this.name = "OnchainosExecError";
   }
 }

@@ -367,7 +367,7 @@ export class OnchainosClient {
           if (nodeErr.code === "ENOENT") {
             return reject(new OnchainosNotInstalledError(this.config.bin));
           }
-          return reject(new OnchainosExecError(args, typeof err.code === "number" ? err.code : null, stderr || err.message));
+          return reject(new OnchainosExecError(args, typeof err.code === "number" ? err.code : null, stderr || err.message, stdout));
         }
         resolve(stdout);
       });
