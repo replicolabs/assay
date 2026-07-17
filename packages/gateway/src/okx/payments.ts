@@ -9,6 +9,13 @@
  * emit. Rejection reason from OKX's own review confirmed the mismatch:
  * "This Agent has not passed x402 standard validation."
  *
+ * `resource` is an OBJECT ({url, description, mimeType}), not a bare path
+ * string — confirmed against OKX's own A2MCP dev docs example
+ * (web3.okx.com/onchainos/dev-docs/okxai/howtokmcp), which this module
+ * originally got wrong too (a second real v2-compliance bug, found only by
+ * reading OKX's own reference example directly rather than re-testing our
+ * already-"working" output).
+ *
  * Honest scope boundary: this module emits a spec-shaped 402 challenge and
  * does presence/structural checks on a replayed `X-PAYMENT` header, but does
  * NOT perform on-chain signature/settlement verification — that requires a
@@ -22,7 +29,7 @@
 
 export interface X402Challenge {
   x402Version: 2;
-  resource: string;
+  resource: { url: string; description: string; mimeType: string };
   accepts: Array<{
     scheme: "exact";
     network: string;
@@ -44,13 +51,21 @@ export interface X402Config {
   // XLayer USDT are name:"USD₮0", version:"1".
   assetName: string;
   assetVersion: string;
+  // Public base URL this gateway is reachable at (e.g. https://api.useassay.xyz)
+  // — needed to build resource.url as a full absolute URL, per OKX's own spec
+  // example, not a bare path.
+  publicBaseUrl: string;
   facilitatorUrl?: string;
 }
 
-export function buildChallenge(config: X402Config, resource: string): X402Challenge {
+export function buildChallenge(config: X402Config, resourcePath: string): X402Challenge {
   return {
     x402Version: 2,
-    resource,
+    resource: {
+      url: `${config.publicBaseUrl}${resourcePath}`,
+      description: "Assay ranked-shortlist lookup (A2MCP)",
+      mimeType: "application/json"
+    },
     accepts: [
       {
         scheme: "exact",
@@ -59,7 +74,9 @@ export function buildChallenge(config: X402Config, resource: string): X402Challe
         asset: config.assetAddress,
         payTo: config.payToAddress,
         extra: { name: config.assetName, version: config.assetVersion },
-        maxTimeoutSeconds: 60
+        // OKX's own spec example uses 300s; matching their documented default
+        // rather than our earlier arbitrary 60s.
+        maxTimeoutSeconds: 300
       }
     ]
   };

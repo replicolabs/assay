@@ -217,6 +217,19 @@ export const TaskStatusSchema = z
   .passthrough();
 export type TaskStatus = z.infer<typeof TaskStatusSchema>;
 
+// --- `agent active-tasks` ----------------------------------------------------
+// Live-verified real shape: {tasks:[...], totalAgents, totalTasks}, each row
+// matching TaskStatusSchema's fields (jobId/myAgentId/myRole/counterpartyAgentId/
+// counterpartyRole/status/statusCode/title/tokenAmount/tokenSymbol/shortJobId).
+export const ActiveTasksResponseSchema = z
+  .object({
+    tasks: z.array(TaskStatusSchema),
+    totalAgents: z.number().optional(),
+    totalTasks: z.number().optional()
+  })
+  .passthrough();
+export type ActiveTasksResponse = z.infer<typeof ActiveTasksResponseSchema>;
+
 // --- `agent asp-match` -------------------------------------------------------
 export const AspMatchRecommendationSchema = z
   .object({

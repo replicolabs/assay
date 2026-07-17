@@ -9,6 +9,7 @@ import {
   OnchainosSchemaError
 } from "./errors.js";
 import {
+  ActiveTasksResponseSchema,
   AgentDetailListSchema,
   AgentSearchResponseSchema,
   AgentServiceListResponseSchema,
@@ -24,6 +25,7 @@ import {
   TaskSearchResponseSchema,
   TaskStatusSchema,
   X402CheckResponseSchema,
+  type ActiveTasksResponse,
   type AgentDetail,
   type AgentSearchResponse,
   type AgentService,
@@ -124,6 +126,29 @@ export class OnchainosClient {
 
   async taskDeliverableList(jobId: string, role: "user" | "asp" = "user"): Promise<Deliverable[]> {
     return this.run(["agent", "task-deliverable-list", "--job-id", jobId, "--role", role], DeliverableListResponseSchema);
+  }
+
+  /** Non-terminal tasks across all agents under the active account, optionally role-filtered. */
+  async activeTasks(opts: { role?: "user" | "asp" | "evaluator"; includeTerminal?: boolean } = {}): Promise<ActiveTasksResponse> {
+    const args = ["agent", "active-tasks"];
+    if (opts.role) args.push("--role", opts.role);
+    if (opts.includeTerminal) args.push("--include-terminal");
+    return this.run(args, ActiveTasksResponseSchema);
+  }
+
+  /**
+   * ASP cold-start: sends the fixed, non-customizable A2A negotiation opener
+   * to the User Agent of a designated task (`okx-a2a session create` +
+   * `okx-a2a xmtp-send` in one call). This is the ONLY automated response
+   * this client sends on the ASP side — `apply` is deliberately NOT wrapped
+   * here, since OKX's own documented protocol (okx-ai skill,
+   * task-asp-accept.md) states apply is system-event-triggered only
+   * ("JobAspSelected" playbook) and manual/automated invocation from the
+   * cold-start path is an explicitly documented anti-pattern (risks state
+   * machine corruption / escrow issues).
+   */
+  async contactUser(jobId: string, agentId: string): Promise<void> {
+    await this.run(["agent", "contact-user", jobId, "--agent-id", agentId], AckResponseSchema);
   }
 
   // --- Canary / task publishing (Assay acting as User Agent / buyer) ---------

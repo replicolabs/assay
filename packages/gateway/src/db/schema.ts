@@ -135,6 +135,13 @@ export interface AssessmentsTable {
   resolved_at: Date | null;
 }
 
+export interface A2AContactedTasksTable {
+  job_id: string;
+  okx_agent_id: string;
+  counterparty_agent_id: string | null;
+  contacted_at: Generated<Date>;
+}
+
 export interface Database {
   skill_categories: SkillCategoriesTable;
   agents: AgentsTable;
@@ -147,4 +154,5 @@ export interface Database {
   consistency_runs: ConsistencyRunsTable;
   composite_scores: CompositeScoresTable;
   assessments: AssessmentsTable;
+  a2a_contacted_tasks: A2AContactedTasksTable;
 }

@@ -140,6 +140,33 @@ switch (sub) {
     ok({ total: 0, page: 1, pageSize: 20, tasks: [] });
     break;
   }
+  case "agent active-tasks": {
+    // Live-verified real shape, trimmed to the one scenario tests need: a
+    // single task designating our fake ASP (1001) still at status "created".
+    ok({
+      tasks: [
+        {
+          jobId: "0xsandboxtask1",
+          myAgentId: "1001",
+          myRole: "asp",
+          counterpartyAgentId: "9001",
+          counterpartyRole: "user",
+          status: "created",
+          statusCode: 0,
+          title: "Assess vendor candidates",
+          tokenAmount: "1",
+          tokenSymbol: "USDT"
+        }
+      ],
+      totalAgents: 1,
+      totalTasks: 1
+    });
+    break;
+  }
+  case "agent contact-user": {
+    ok({ success: true, txHash: `0xfaketx${Date.now()}` });
+    break;
+  }
   case "agent task-deliverable-list": {
     const path = new URL("./deliverable-fixture.json", import.meta.url).pathname;
     ok({ deliverables: [{ path, originalName: "answer.json", deliverableType: "text", sizeBytes: 128, savedAt: new Date().toISOString() }] });

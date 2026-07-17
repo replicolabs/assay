@@ -6,6 +6,7 @@ import { AnthropicLLMClient, NullLLMClient } from "./intake/llmClient.js";
 import { OnchainosClient } from "./okx/onchainosClient.js";
 import { loadOnchainosConfig } from "./okx/config.js";
 import { startHeartbeatLoop } from "./okx/heartbeatLoop.js";
+import { startA2AResponderLoop } from "./okx/a2aResponder.js";
 import type { X402Config } from "./okx/payments.js";
 
 function loadDeps(): AppDeps {
@@ -24,12 +25,14 @@ function loadDeps(): AppDeps {
     // `agent x402-check` against another listed A2MCP service.
     assetName: process.env.X402_ASSET_NAME ?? "USD₮0",
     assetVersion: process.env.X402_ASSET_VERSION ?? "1",
+    publicBaseUrl: process.env.GATEWAY_PUBLIC_BASE_URL ?? "https://api.useassay.xyz",
     facilitatorUrl: process.env.PAYMENT_FACILITATOR_URL
   };
 
   const buyerAgentId = process.env.ASSAY_BUYER_AGENT_ID ?? "";
+  const aspAgentId = process.env.ASSAY_ASP_AGENT_ID ?? "";
 
-  return { client, db, engine, llm, x402, buyerAgentId };
+  return { client, db, engine, llm, x402, buyerAgentId, aspAgentId };
 }
 
 async function main() {
@@ -41,6 +44,14 @@ async function main() {
   if (loadOnchainosConfig().mode === "live") {
     const chainIndex = Number(deps.x402.network.split(":")[1] ?? "196");
     startHeartbeatLoop(deps.client, chainIndex);
+
+    // Opt-in gate: this loop sends a real XMTP message to real counterparties
+    // (OKX's own QA bot included) the moment it's enabled — deliberately not
+    // on by default just because ONCHAINOS_MODE=live, so turning it on is a
+    // conscious, separate decision (see A2A_RESPONDER_ENABLED in README).
+    if (process.env.A2A_RESPONDER_ENABLED === "true" && deps.aspAgentId) {
+      startA2AResponderLoop(deps.client, deps.db, deps.aspAgentId);
+    }
   }
 
   // GATEWAY_HTTP_ADDR wins when set; falls back to Railway's PORT convention

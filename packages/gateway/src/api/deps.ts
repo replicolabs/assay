@@ -13,4 +13,6 @@ export interface AppDeps {
   x402: X402Config;
   /** Assay's own OKX.AI User Agent identity — the buyer role used to publish canary tasks. */
   buyerAgentId: string;
+  /** Assay's own OKX.AI ASP identity — the seller role, used by the A2A negotiation responder. */
+  aspAgentId: string;
 }

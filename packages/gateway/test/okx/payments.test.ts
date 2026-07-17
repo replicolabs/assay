@@ -7,18 +7,23 @@ const config: X402Config = {
   assetAddress: "0xusdt",
   priceAtomic: "10000",
   assetName: "USD₮0",
-  assetVersion: "1"
+  assetVersion: "1",
+  publicBaseUrl: "https://api.useassay.xyz"
 };
 
 describe("x402 payments", () => {
   it("builds a spec-shaped v2 402 challenge", () => {
-    // Live-verified against a real, currently-listed XLayer A2MCP service
-    // via `onchainos agent x402-check`: x402Version:2, `amount` (not
-    // `maxAmountRequired`), top-level `resource`, and `extra.name`/`version`
-    // (EIP-712 domain) per accepts entry.
+    // Confirmed against OKX's own A2MCP dev docs example
+    // (web3.okx.com/onchainos/dev-docs/okxai/howtokmcp): x402Version:2,
+    // `amount` (not `maxAmountRequired`), `resource` as an OBJECT
+    // {url, description, mimeType} with an absolute url (not a bare path),
+    // and `extra.name`/`version` (EIP-712 domain) per accepts entry.
     const challenge = buildChallenge(config, "/v1/lookup");
     expect(challenge.x402Version).toBe(2);
-    expect(challenge.resource).toBe("/v1/lookup");
+    expect(challenge.resource).toMatchObject({
+      url: "https://api.useassay.xyz/v1/lookup",
+      mimeType: "application/json"
+    });
     expect(challenge.accepts[0]).toMatchObject({
       scheme: "exact",
       network: "eip155:196",
