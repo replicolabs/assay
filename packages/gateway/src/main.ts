@@ -26,7 +26,18 @@ function loadDeps(): AppDeps {
     assetName: process.env.X402_ASSET_NAME ?? "USD₮0",
     assetVersion: process.env.X402_ASSET_VERSION ?? "1",
     publicBaseUrl: process.env.GATEWAY_PUBLIC_BASE_URL ?? "https://api.useassay.xyz",
-    facilitatorUrl: process.env.PAYMENT_FACILITATOR_URL
+    // Real OKX x402 facilitator (verify/settle) — same Developer Portal
+    // credentials as the onchainos CLI's AK login. Only wired up when all
+    // three are present; otherwise verify/settle fail closed (see payments.ts).
+    facilitator:
+      process.env.OKX_API_KEY && process.env.OKX_SECRET_KEY && process.env.OKX_PASSPHRASE
+        ? {
+            baseUrl: process.env.X402_FACILITATOR_BASE_URL ?? "https://web3.okx.com",
+            apiKey: process.env.OKX_API_KEY,
+            secretKey: process.env.OKX_SECRET_KEY,
+            passphrase: process.env.OKX_PASSPHRASE
+          }
+        : undefined
   };
 
   const buyerAgentId = process.env.ASSAY_BUYER_AGENT_ID ?? "";
