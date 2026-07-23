@@ -87,4 +87,26 @@ describe("facilitatorClient", () => {
 
     await expect(settleX402Payment(config, {}, {})).rejects.toThrow(FacilitatorError);
   });
+
+  it("treats a numeric code:0 (OKX's real wire format) as success, not an error", async () => {
+    // Live-verified 2026-07-23: OKX's actual API returns `"code":0` as a JSON
+    // number, not the string `"0"` their own docs example shows. A strict
+    // `!== "0"` check silently swallowed every real successful response.
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jsonResponse({ code: 0, data: { isValid: true, payer: "0xabc" } }))
+    );
+
+    const result = await verifyX402Payment(config, {}, {});
+    expect(result).toEqual({ isValid: true, payer: "0xabc" });
+  });
+
+  it("throws FacilitatorError on a numeric non-zero code", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jsonResponse({ code: 50001, msg: "signature invalid" }))
+    );
+
+    await expect(verifyX402Payment(config, {}, {})).rejects.toThrow(/signature invalid/);
+  });
 });

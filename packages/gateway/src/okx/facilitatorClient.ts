@@ -84,9 +84,14 @@ async function okxRequest<T>(config: FacilitatorConfig, method: "GET" | "POST", 
     body: method === "GET" ? undefined : bodyStr
   });
 
-  const json = (await res.json()) as { code?: string; msg?: string; data?: T };
-  if (!res.ok || json.code !== "0") {
-    throw new FacilitatorError(json.code ?? String(res.status), json.msg ?? `HTTP ${res.status}`);
+  const json = (await res.json()) as { code?: string | number; msg?: string; data?: T };
+  // Live-verified 2026-07-23: OKX returns `code` as a JSON *number* (`0`),
+  // not the string `"0"` shown in their own docs example — a strict `!== "0"`
+  // check silently treated every successful response as an error (masking
+  // the real verify/settle result behind an empty "error 0:" message).
+  // String-compare both sides so either representation is accepted.
+  if (!res.ok || String(json.code) !== "0") {
+    throw new FacilitatorError(String(json.code ?? res.status), json.msg ?? `HTTP ${res.status}`);
   }
   return json.data as T;
 }
