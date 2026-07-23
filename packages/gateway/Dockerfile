@@ -36,10 +36,28 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # ca-certificates: TLS to Neon and to OKX's backend. curl: fetches the onchainos
-# installer (build-time only, but curl itself stays in the image; harmless).
+# binary (build-time only, but curl itself stays in the image; harmless).
+#
+# PINNED to v4.2.6 — deliberately NOT the installer's "latest" pointer.
+# Live-verified 2026-07-23: a fresh `curl install.sh | sh` build pulls v4.3.0,
+# which replaced non-interactive AK (API-key) wallet login with a browser-only
+# OAuth flow (`wallet login --phase init|open|poll`, opens a real browser page
+# for the human to complete). There is no headless path left in v4.3.0 — the
+# old `--force` flag is gone entirely, not renamed. A container built against
+# it crash-loops forever on `onchainos wallet login --force` in
+# docker-entrypoint.sh (`set -e` kills the entrypoint before `node main.js`
+# ever runs), taking the whole gateway down. v4.2.6 is the last version with
+# working headless AK login. Checksum-verified the same way the official
+# installer does (same GitHub release assets, just pinned instead of
+# "latest"). Revisit this pin if/when OKX ships a headless auth path for
+# v4.3+ — check for it before assuming still needed.
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
-    && curl -sSL https://raw.githubusercontent.com/okx/onchainos-skills/main/install.sh | sh \
-    && mv /root/.local/bin/onchainos /usr/local/bin/onchainos \
+    && curl -sSL "https://github.com/okx/onchainos-skills/releases/download/v4.2.6/onchainos-x86_64-unknown-linux-gnu" -o /tmp/onchainos \
+    && curl -sSL "https://github.com/okx/onchainos-skills/releases/download/v4.2.6/checksums.txt" -o /tmp/checksums.txt \
+    && echo "$(grep 'onchainos-x86_64-unknown-linux-gnu' /tmp/checksums.txt | awk '{print $1}')  /tmp/onchainos" | sha256sum -c - \
+    && chmod +x /tmp/onchainos \
+    && mv /tmp/onchainos /usr/local/bin/onchainos \
+    && rm -f /tmp/checksums.txt \
     && rm -rf /var/lib/apt/lists/*
 
 # A2A negotiation-responder dependencies (see note above) — only exercised when
