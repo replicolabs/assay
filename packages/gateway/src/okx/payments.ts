@@ -90,7 +90,7 @@ export type PaymentVerification = { valid: true; payload: unknown } | { valid: f
 
 export async function verifyPayment(header: string | undefined, config: X402Config): Promise<PaymentVerification> {
   if (!header) {
-    return { valid: false, reason: "missing X-PAYMENT header" };
+    return { valid: false, reason: "missing PAYMENT-SIGNATURE (or legacy X-PAYMENT) header" };
   }
   if (!config.facilitator) {
     return { valid: false, reason: "no payment facilitator configured — see README §Setup (OKX_API_KEY/SECRET_KEY/PASSPHRASE)" };

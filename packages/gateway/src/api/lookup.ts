@@ -12,8 +12,7 @@ import type { AppDeps } from "./deps.js";
  */
 export function registerLookupRoutes(app: FastifyInstance, deps: AppDeps): void {
   app.post("/v1/lookup", async (request, reply) => {
-    const paymentHeader = request.headers["x-payment"];
-    const verification = await verifyPayment(Array.isArray(paymentHeader) ? paymentHeader[0] : paymentHeader, deps.x402);
+    const verification = await verifyPayment(resolvePaymentHeader(request.headers), deps.x402);
 
     if (!verification.valid) {
       const challenge = buildChallenge(deps.x402, "/v1/lookup");
@@ -32,7 +31,7 @@ export function registerLookupRoutes(app: FastifyInstance, deps: AppDeps): void 
       return reply.status(402).send({ ...challenge, reason: settlement.reason });
     }
     reply.header(
-      "X-PAYMENT-RESPONSE",
+      "PAYMENT-RESPONSE",
       Buffer.from(JSON.stringify({ success: true, transaction: settlement.txHash ?? null })).toString("base64")
     );
 
@@ -40,6 +39,27 @@ export function registerLookupRoutes(app: FastifyInstance, deps: AppDeps): void 
   });
 
   app.post("/v1/web/lookup", async (request, reply) => runLookup(deps, request.body, reply));
+}
+
+/**
+ * Real x402 v2 buyers (OKX's own Payment Protocol skill, `payment quote` /
+ * `payment pay --payment-id` path) reply under `PAYMENT-SIGNATURE`, not
+ * `X-PAYMENT` — `X-PAYMENT` is the *legacy v1* header name per OKX's own
+ * `accepts-schemes.md` ("## Legacy: x402 v1 (`X-PAYMENT`)"). We emit
+ * x402Version:2 challenges, so a compliant buyer sends `PAYMENT-SIGNATURE`.
+ * Live-reproduced 2026-07-23: a real signed `task-402-pay` replay against
+ * this exact endpoint got rejected as "missing X-PAYMENT header" — this was
+ * the actual root cause of the original rejection, not (only) the facilitator
+ * wiring. Check both names — `payment-signature` first (the real v2 name),
+ * `x-payment` as a defensive fallback for any client still on v1 — rather
+ * than assume either populate is the only one out there.
+ */
+function resolvePaymentHeader(headers: Record<string, string | string[] | undefined>): string | undefined {
+  const signature = headers["payment-signature"];
+  if (signature) return Array.isArray(signature) ? signature[0] : signature;
+  const legacy = headers["x-payment"];
+  if (legacy) return Array.isArray(legacy) ? legacy[0] : legacy;
+  return undefined;
 }
 
 async function runLookup(deps: AppDeps, rawBody: unknown, reply: FastifyReply) {
