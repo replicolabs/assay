@@ -80,6 +80,24 @@ RUN npm install -g @anthropic-ai/claude-code @okxweb3/a2a-node
 # was broken. Fix: run as a real non-root user.
 RUN useradd --create-home --shell /bin/bash appuser
 
+# The `okx-ai` skill (task marketplace / ASP negotiation protocol — apply /
+# deliver / next-action / event handling) that autonomous Claude sessions
+# need to actually complete a negotiation correctly, not just guess CLI
+# syntax. On an interactive dev machine this gets installed automatically
+# into ~/.claude/skills/ by tooling outside this container's reach; a fresh
+# headless container has no such install step, so Claude found nothing there
+# — live-verified 2026-07-24 (a real dispatch failure showed Claude running
+# `find / -path "*okx-ai*"` and coming up empty, then guessing a wrong CLI
+# flag). Vendored from OKX's own Apache-2.0-licensed skill content
+# (packages/gateway/vendor/okx-skills/okx-ai) rather than depending on an
+# undiscovered install mechanism. Placed under ~/.agents/skills with a
+# ~/.claude/skills symlink, mirroring the exact layout seen on a working dev
+# machine, since Claude Code's skill discovery reads from ~/.claude/skills.
+COPY --chown=appuser:appuser packages/gateway/vendor/okx-skills/okx-ai /home/appuser/.agents/skills/okx-ai
+RUN mkdir -p /home/appuser/.claude/skills \
+    && ln -s ../../.agents/skills/okx-ai /home/appuser/.claude/skills/okx-ai \
+    && chown -R appuser:appuser /home/appuser/.claude /home/appuser/.agents
+
 COPY --from=builder --chown=appuser:appuser /app/node_modules node_modules
 COPY --from=builder --chown=appuser:appuser /app/packages/gateway/package.json packages/gateway/package.json
 COPY --from=builder --chown=appuser:appuser /app/packages/gateway/dist packages/gateway/dist
