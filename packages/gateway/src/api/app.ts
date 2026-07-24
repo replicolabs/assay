@@ -2,6 +2,7 @@ import Fastify, { type FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
 import { registerLookupRoutes } from "./lookup.js";
 import { registerAssessRoutes } from "./assess.js";
+import { registerA2ADebugRoutes } from "./a2aDebug.js";
 import type { AppDeps } from "./deps.js";
 
 /**
@@ -26,6 +27,7 @@ export function buildApp(deps: AppDeps): FastifyInstance {
 
   registerLookupRoutes(app, deps);
   registerAssessRoutes(app, deps);
+  registerA2ADebugRoutes(app);
 
   return app;
 }
