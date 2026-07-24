@@ -65,15 +65,32 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 # step either way and keeps the entrypoint free of package-manager logic.
 RUN npm install -g @anthropic-ai/claude-code @okxweb3/a2a-node
 
-COPY --from=builder /app/node_modules node_modules
-COPY --from=builder /app/packages/gateway/package.json packages/gateway/package.json
-COPY --from=builder /app/packages/gateway/dist packages/gateway/dist
+# Claude Code CLI hard-refuses to run with --dangerously-skip-permissions as
+# root/sudo (a fixed safety check, not configurable) — and the okx-a2a
+# daemon's autonomous background negotiation needs exactly that flag for
+# headless operation. This container ran as root (the node:22-slim default)
+# with no non-root user ever created, which meant EVERY autonomous dispatch
+# silently failed from the moment the daemon was added — live-verified
+# 2026-07-24 via a temporary diagnostic route reading the daemon's own
+# pending-decision queue: every entry was `missing_session_id`, stderr
+# "--dangerously-skip-permissions cannot be used with root/sudo privileges
+# for security reasons". Our own one-off `contactUser` opener calls still
+# worked (those go through the plain onchainos CLI, not Claude), which is why
+# this stayed hidden — only the Claude-driven continuation of a negotiation
+# was broken. Fix: run as a real non-root user.
+RUN useradd --create-home --shell /bin/bash appuser
+
+COPY --from=builder --chown=appuser:appuser /app/node_modules node_modules
+COPY --from=builder --chown=appuser:appuser /app/packages/gateway/package.json packages/gateway/package.json
+COPY --from=builder --chown=appuser:appuser /app/packages/gateway/dist packages/gateway/dist
 # config.ts resolves the ONCHAINOS_MODE=fake binary path relative to the compiled
 # file's own location (packages/gateway/test/fakes/onchainos) — needed at runtime
 # whenever ONCHAINOS_MODE=fake (e.g. testing this same image locally).
-COPY --from=builder /app/packages/gateway/test/fakes packages/gateway/test/fakes
+COPY --from=builder --chown=appuser:appuser /app/packages/gateway/test/fakes packages/gateway/test/fakes
 
-COPY packages/gateway/docker-entrypoint.sh /app/docker-entrypoint.sh
+COPY --chown=appuser:appuser packages/gateway/docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
+
+USER appuser
 
 CMD ["/app/docker-entrypoint.sh"]
