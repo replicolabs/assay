@@ -95,8 +95,20 @@ RUN useradd --create-home --shell /bin/bash appuser
 # machine, since Claude Code's skill discovery reads from ~/.claude/skills.
 COPY --chown=appuser:appuser packages/gateway/vendor/okx-skills/okx-ai /home/appuser/.agents/skills/okx-ai
 RUN mkdir -p /home/appuser/.claude/skills \
-    && ln -s ../../.agents/skills/okx-ai /home/appuser/.claude/skills/okx-ai \
-    && chown -R appuser:appuser /home/appuser/.claude /home/appuser/.agents
+    && ln -s ../../.agents/skills/okx-ai /home/appuser/.claude/skills/okx-ai
+
+# Live-verified 2026-07-25 (via the temporary diagnostic route's log read):
+# the daemon's autonomous dispatch was defaulting to claude-opus-5[1m] for
+# every session — $0.32 for a single mechanical "check status, notify if
+# failed, don't retry" job. With ~5 stuck jobs re-dispatched on every
+# container restart while iterating on this feature today, that model choice
+# alone is the dominant cost driver, not session-failure churn. This task
+# needs a status check and a templated notification, not opus-level
+# reasoning — pin the default model to something dramatically cheaper via
+# Claude Code's own settings.json (standard mechanism, reads from $HOME).
+COPY --chown=appuser:appuser packages/gateway/vendor/claude-config/settings.json /home/appuser/.claude/settings.json
+
+RUN chown -R appuser:appuser /home/appuser/.claude /home/appuser/.agents
 
 COPY --from=builder --chown=appuser:appuser /app/node_modules node_modules
 COPY --from=builder --chown=appuser:appuser /app/packages/gateway/package.json packages/gateway/package.json
