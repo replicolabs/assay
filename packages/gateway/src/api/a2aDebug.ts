@@ -25,7 +25,7 @@ const LOG_DIR_PREFIX = `${process.env.HOME ?? "/home/appuser"}/.okx-agent-task/l
 export function registerA2ADebugRoutes(app: FastifyInstance): void {
   app.get("/internal/a2a-debug", async (request, reply) => {
     const token = process.env.ADMIN_DEBUG_TOKEN;
-    const query = request.query as { token?: string; jobId?: string; toAgentId?: string; logPath?: string; listLogs?: string };
+    const query = request.query as { token?: string; jobId?: string; toAgentId?: string; logPath?: string; listLogs?: string; grep?: string };
     if (!token || query.token !== token) {
       return reply.status(404).send();
     }
@@ -53,7 +53,15 @@ export function registerA2ADebugRoutes(app: FastifyInstance): void {
         if (!candidate.startsWith(LOG_DIR_PREFIX) || candidate.includes("..")) continue;
         try {
           const content = await readFile(candidate, "utf8");
-          return reply.send({ ok: true, path: candidate, content: content.slice(-12000) });
+          // grep searches the FULL file (not just a slice) for a substring —
+          // for answering "does X appear anywhere in this session" without
+          // truncation hiding it (e.g. CLAUDE.md content loaded as part of
+          // the system prompt, near the start of a session much longer than
+          // any reasonable content slice).
+          if (query.grep) {
+            return reply.send({ ok: true, path: candidate, length: content.length, found: content.includes(query.grep) });
+          }
+          return reply.send({ ok: true, path: candidate, length: content.length, content: content.slice(-12000) });
         } catch {
           // try next candidate
         }
