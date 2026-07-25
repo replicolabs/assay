@@ -1,8 +1,10 @@
 import { execFile } from "node:child_process";
+import { readFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import type { FastifyInstance } from "fastify";
 
 const execFileAsync = promisify(execFile);
+const LOG_DIR_PREFIX = `${process.env.HOME ?? "/home/appuser"}/.okx-agent-task/logs/`;
 
 /**
  * TEMPORARY diagnostic route — read-only introspection into the okx-a2a
@@ -23,12 +25,30 @@ const execFileAsync = promisify(execFile);
 export function registerA2ADebugRoutes(app: FastifyInstance): void {
   app.get("/internal/a2a-debug", async (request, reply) => {
     const token = process.env.ADMIN_DEBUG_TOKEN;
-    const query = request.query as { token?: string; jobId?: string; toAgentId?: string };
+    const query = request.query as { token?: string; jobId?: string; toAgentId?: string; logPath?: string };
     if (!token || query.token !== token) {
       return reply.status(404).send();
     }
+
+    if (query.logPath) {
+      // Only ever read files under the daemon's own log directory — the
+      // logPath values we hand back come from okx-a2a's own JSON output, but
+      // this endpoint is token-gated, not a real auth scheme, so still
+      // refuse anything that isn't actually one of the daemon's own logs.
+      const decoded = decodeURIComponent(query.logPath);
+      if (!decoded.startsWith(LOG_DIR_PREFIX) || decoded.includes("..")) {
+        return reply.status(400).send({ error: "logPath must be under the daemon's own log directory" });
+      }
+      try {
+        const content = await readFile(decoded, "utf8");
+        return reply.send({ ok: true, path: decoded, content: content.slice(-12000) });
+      } catch (err) {
+        return reply.send({ ok: false, path: decoded, error: err instanceof Error ? err.message : String(err) });
+      }
+    }
+
     if (!query.jobId) {
-      return reply.status(400).send({ error: "jobId query param required" });
+      return reply.status(400).send({ error: "jobId or logPath query param required" });
     }
 
     const results: Record<string, unknown> = {};
