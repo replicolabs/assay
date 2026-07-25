@@ -32,6 +32,16 @@ export async function deliverAcceptedAspTasks(
 
   for (const task of providerTasks) {
     if (task.providerAgentId !== aspAgentId || task.status !== 1) continue;
+    // Live-verified 2026-07-25: `agent deliver` rejects any task whose
+    // paymentMode isn't 1 (escrow) — "deliver/submit is only supported for
+    // escrow (1). x402 tasks skip the submit step; the User Agent obtains
+    // the deliverable by replaying the ASP's endpoint." An x402-mode
+    // (paymentMode 3) task reaching `accepted` completes itself atomically
+    // through the /v1/lookup HTTP replay (payments.ts) — there's nothing for
+    // this loop to do for it, and calling deliver anyway both fails on-chain
+    // every tick AND wastefully re-runs the real LLM/evaluation pipeline for
+    // a job that was never going anywhere.
+    if (task.paymentMode !== 1) continue;
 
     const already = await deps.db.selectFrom("a2a_delivered_tasks").select("job_id").where("job_id", "=", task.jobId).executeTakeFirst();
     if (already) continue;

@@ -91,6 +91,15 @@ describe("deliverAcceptedAspTasks against the fake CLI", () => {
     expect(buildShortlist).not.toHaveBeenCalled();
   });
 
+  it("never calls deliver for an x402-mode task, even if it shows status accepted", async () => {
+    const { db, inserted } = fakeDeliveredDb();
+    const result = await deliverAcceptedAspTasks(client, { db, engine, llm }, "1001");
+
+    expect(result.delivered).not.toContain("0xacceptedx402task");
+    expect(inserted.map((i) => i.job_id)).not.toContain("0xacceptedx402task");
+    expect(buildShortlist).not.toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ taskSummary: "Should never reach agent deliver." }));
+  });
+
   it("ignores tasks that don't designate this ASP identity", async () => {
     const { db, inserted } = fakeDeliveredDb();
     const result = await deliverAcceptedAspTasks(client, { db, engine, llm }, "9999");

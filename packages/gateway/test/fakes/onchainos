@@ -182,6 +182,21 @@ switch (sub) {
           buyerAgentId: "9001",
           tokenAmount: "1",
           tokenSymbol: "USDT"
+        },
+        {
+          // Live-verified 2026-07-25: x402-mode (paymentMode 3) tasks reach
+          // `accepted` too (payment settles on-chain independent of the
+          // negotiated deliver/submit step) but `agent deliver` rejects them
+          // — they complete atomically through the HTTP replay instead.
+          jobId: "0xacceptedx402task",
+          title: "x402 accepted but not deliverable",
+          description: "Should never reach agent deliver.",
+          status: 1,
+          paymentMode: 3,
+          providerAgentId: "1001",
+          buyerAgentId: "9001",
+          tokenAmount: "0.01",
+          tokenSymbol: "USDT"
         }
       ],
       buyerTasks: [],
