@@ -62,7 +62,7 @@ async function main() {
     // on by default just because ONCHAINOS_MODE=live, so turning it on is a
     // conscious, separate decision (see A2A_RESPONDER_ENABLED in README).
     if (process.env.A2A_RESPONDER_ENABLED === "true" && deps.aspAgentId) {
-      startA2AResponderLoop(deps.client, deps.db, deps.aspAgentId);
+      startA2AResponderLoop(deps.client, deps.db, deps.aspAgentId, deps.llm);
       // Same gate as the opener responder — this is the other half of the
       // same "automated A2A negotiation" capability (respond, then actually
       // complete accepted work), not a separate decision to expose.

@@ -11,7 +11,14 @@ export interface LLMClient {
 export class AnthropicLLMClient implements LLMClient {
   private client: import("@anthropic-ai/sdk").default | undefined;
 
-  constructor(private readonly apiKey: string = process.env.ANTHROPIC_API_KEY ?? "", private readonly model: string = "claude-sonnet-5") {}
+  // Both current callers (buildTaskSpec's structured JSON extraction,
+  // gateTaskScope's binary classification) are narrow, well-specified tasks
+  // — not open-ended reasoning. Same cost lesson as the okx-a2a daemon
+  // (vendor/claude-config/settings.json): default to the cheapest model
+  // that's actually sufficient, not the strongest available. Both run
+  // automatically now (a2aDeliverer.ts, the A2A responder's scope gate), not
+  // just on user-triggered calls, so the per-call cost compounds.
+  constructor(private readonly apiKey: string = process.env.ANTHROPIC_API_KEY ?? "", private readonly model: string = "claude-haiku-4-5-20251001") {}
 
   private async getClient() {
     if (!this.apiKey) {

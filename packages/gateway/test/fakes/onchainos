@@ -173,6 +173,19 @@ switch (sub) {
     ok({
       providerTasks: [
         {
+          // Matches active-tasks' fixed "created" row (jobId 0xsandboxtask1)
+          // so a2aResponder tests can exercise the scope-gate lookup path.
+          jobId: "0xsandboxtask1",
+          title: "Assess vendor candidates",
+          description: "Find and rank the best marketplace agents for a smart contract audit.",
+          status: 0,
+          paymentMode: 1,
+          providerAgentId: "1001",
+          buyerAgentId: "9001",
+          tokenAmount: "1",
+          tokenSymbol: "USDT"
+        },
+        {
           jobId: "0xacceptedtask1",
           title: "Assess vendor candidates",
           description: "Evaluate top 3 vendors for consistency and recommend an escrow split with milestones.",
@@ -206,6 +219,10 @@ switch (sub) {
   }
   case "agent deliver": {
     ok({ success: true, txHash: `0xfaketx${Date.now()}` });
+    break;
+  }
+  case "agent asp-reject": {
+    ok({ success: true });
     break;
   }
   case "agent task-deliverable-list": {

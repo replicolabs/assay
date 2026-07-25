@@ -108,6 +108,15 @@ RUN mkdir -p /home/appuser/.claude/skills \
 # Claude Code's own settings.json (standard mechanism, reads from $HOME).
 COPY --chown=appuser:appuser packages/gateway/vendor/claude-config/settings.json /home/appuser/.claude/settings.json
 
+# Assay's own negotiation policy (pricing floor, scope-expansion handling,
+# last-minute-change handling) — real judgment calls the okx-ai protocol
+# skill deliberately doesn't cover, since it's protocol-only, not business
+# policy. CLAUDE.md is Claude Code's always-loaded context (unlike a skill,
+# no trigger-matching needed), so this applies to every autonomous session
+# under this user without depending on the daemon's prompt happening to
+# mention it.
+COPY --chown=appuser:appuser packages/gateway/vendor/claude-config/CLAUDE.md /home/appuser/.claude/CLAUDE.md
+
 RUN chown -R appuser:appuser /home/appuser/.claude /home/appuser/.agents
 
 COPY --from=builder --chown=appuser:appuser /app/node_modules node_modules

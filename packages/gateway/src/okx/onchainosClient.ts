@@ -154,6 +154,18 @@ export class OnchainosClient {
   }
 
   /**
+   * Boundary testing (declines a designated task outright, off-chain, no
+   * signing) — used when the scope gate determines the request isn't
+   * actually for Assay's real service (recommend/rank agents), rather than
+   * engaging in a negotiation Assay was never going to be able to fulfill.
+   */
+  async aspReject(jobId: string, agentId: string, reason?: string): Promise<void> {
+    const args = ["agent", "asp-reject", jobId, "--agent-id", agentId];
+    if (reason) args.push("--reason", reason);
+    await this.run(args, AckResponseSchema);
+  }
+
+  /**
    * Real task descriptions (not available from `status` or `task-search` —
    * see ProviderTaskSchema comment) for jobs where this agent is the
    * provider/ASP, keyed by role status codes (0=created, 1=accepted, ...).

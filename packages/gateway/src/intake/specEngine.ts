@@ -57,7 +57,7 @@ function normalizeCriterion(c: unknown, index: number): AcceptanceCriterion {
 }
 
 /** LLMs sometimes wrap JSON in prose or code fences despite instructions — extract the first {...} block. */
-function parseJsonLoosely(raw: string): Record<string, unknown> {
+export function parseJsonLoosely(raw: string): Record<string, unknown> {
   const trimmed = raw.trim();
   try {
     return JSON.parse(trimmed);
