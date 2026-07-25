@@ -230,6 +230,36 @@ export const ActiveTasksResponseSchema = z
   .passthrough();
 export type ActiveTasksResponse = z.infer<typeof ActiveTasksResponseSchema>;
 
+// --- `agent task-in-progress` ------------------------------------------------
+// The only JSON-native source of a task's real `description` text found —
+// `agent status` and `task-search` both omit it (live-verified 2026-07-25).
+// `common context` has it too but only as narrative prose meant for an LLM
+// prompt, not a field — using it would mean regex-scraping text output,
+// which this client deliberately never does (see class docstring).
+export const ProviderTaskSchema = z
+  .object({
+    jobId: z.string(),
+    title: z.string(),
+    description: z.string(),
+    status: z.number(),
+    paymentMode: z.number().optional(),
+    providerAgentId: z.union([z.string(), z.number()]).transform(String),
+    buyerAgentId: z.union([z.string(), z.number()]).transform(String).optional(),
+    tokenAmount: z.union([z.string(), z.number()]).optional(),
+    tokenSymbol: z.string().optional()
+  })
+  .passthrough();
+export type ProviderTask = z.infer<typeof ProviderTaskSchema>;
+
+export const TaskInProgressResponseSchema = z
+  .object({
+    providerTasks: z.array(ProviderTaskSchema),
+    buyerTasks: z.array(z.unknown()).optional(),
+    evaluatorDisputes: z.array(z.unknown()).optional()
+  })
+  .passthrough();
+export type TaskInProgressResponse = z.infer<typeof TaskInProgressResponseSchema>;
+
 // --- `agent asp-match` -------------------------------------------------------
 export const AspMatchRecommendationSchema = z
   .object({

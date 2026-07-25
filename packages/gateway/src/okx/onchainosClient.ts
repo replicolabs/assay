@@ -22,6 +22,7 @@ import {
   FeedbackListResponseSchema,
   HeartbeatResponseSchema,
   Task402PayResponseSchema,
+  TaskInProgressResponseSchema,
   TaskSearchResponseSchema,
   TaskStatusSchema,
   X402CheckResponseSchema,
@@ -35,6 +36,7 @@ import {
   type DraftResponse,
   type FeedbackItem,
   type Task402PayResponse,
+  type TaskInProgressResponse,
   type TaskSearchResponse,
   type TaskStatus,
   type X402CheckResponse
@@ -149,6 +151,22 @@ export class OnchainosClient {
    */
   async contactUser(jobId: string, agentId: string): Promise<void> {
     await this.run(["agent", "contact-user", jobId, "--agent-id", agentId], AckResponseSchema);
+  }
+
+  /**
+   * Real task descriptions (not available from `status` or `task-search` —
+   * see ProviderTaskSchema comment) for jobs where this agent is the
+   * provider/ASP, keyed by role status codes (0=created, 1=accepted, ...).
+   */
+  async taskInProgress(agentIds: string[]): Promise<TaskInProgressResponse> {
+    return this.run(["agent", "task-in-progress", "--agent-ids", agentIds.join(",")], TaskInProgressResponseSchema);
+  }
+
+  /** ASP submits the real deliverable for an accepted (job_accepted) task. */
+  async deliver(jobId: string, agentId: string, deliverableText: string, message?: string): Promise<void> {
+    const args = ["agent", "deliver", jobId, "--agent-id", agentId, "--deliverable-text", deliverableText];
+    if (message) args.push("--message", message);
+    await this.run(args, AckResponseSchema);
   }
 
   // --- Canary / task publishing (Assay acting as User Agent / buyer) ---------

@@ -167,6 +167,32 @@ switch (sub) {
     ok({ success: true, txHash: `0xfaketx${Date.now()}` });
     break;
   }
+  case "agent task-in-progress": {
+    // Live-verified real shape (2026-07-25): the only JSON-native source of
+    // a task's real description text — `status` and `task-search` omit it.
+    ok({
+      providerTasks: [
+        {
+          jobId: "0xacceptedtask1",
+          title: "Assess vendor candidates",
+          description: "Evaluate top 3 vendors for consistency and recommend an escrow split with milestones.",
+          status: 1,
+          paymentMode: 1,
+          providerAgentId: "1001",
+          buyerAgentId: "9001",
+          tokenAmount: "1",
+          tokenSymbol: "USDT"
+        }
+      ],
+      buyerTasks: [],
+      evaluatorDisputes: []
+    });
+    break;
+  }
+  case "agent deliver": {
+    ok({ success: true, txHash: `0xfaketx${Date.now()}` });
+    break;
+  }
   case "agent task-deliverable-list": {
     const path = new URL("./deliverable-fixture.json", import.meta.url).pathname;
     ok({ deliverables: [{ path, originalName: "answer.json", deliverableType: "text", sizeBytes: 128, savedAt: new Date().toISOString() }] });

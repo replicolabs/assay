@@ -7,6 +7,7 @@ import { OnchainosClient } from "./okx/onchainosClient.js";
 import { loadOnchainosConfig } from "./okx/config.js";
 import { startHeartbeatLoop } from "./okx/heartbeatLoop.js";
 import { startA2AResponderLoop } from "./okx/a2aResponder.js";
+import { startA2ADelivererLoop } from "./okx/a2aDeliverer.js";
 import type { X402Config } from "./okx/payments.js";
 
 function loadDeps(): AppDeps {
@@ -62,6 +63,10 @@ async function main() {
     // conscious, separate decision (see A2A_RESPONDER_ENABLED in README).
     if (process.env.A2A_RESPONDER_ENABLED === "true" && deps.aspAgentId) {
       startA2AResponderLoop(deps.client, deps.db, deps.aspAgentId);
+      // Same gate as the opener responder — this is the other half of the
+      // same "automated A2A negotiation" capability (respond, then actually
+      // complete accepted work), not a separate decision to expose.
+      startA2ADelivererLoop(deps.client, { db: deps.db, engine: deps.engine, llm: deps.llm }, deps.aspAgentId);
     }
   }
 
