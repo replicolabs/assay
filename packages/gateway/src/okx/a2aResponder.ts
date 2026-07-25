@@ -63,7 +63,30 @@ export async function respondToNewAspTasks(
     if (description) {
       const scope = await gateTaskScope(llm, description);
       if (!scope.inScope) {
-        await client.aspReject(task.jobId, aspAgentId, scope.reason);
+        try {
+          await client.aspReject(task.jobId, aspAgentId, scope.reason);
+        } catch (err) {
+          // Live-verified 2026-07-25: this responder's polling-driven scope
+          // gate and the okx-a2a daemon's event-driven autonomous session
+          // both react to the same new task independently. If the daemon's
+          // session already applied (the legitimate, system-event-triggered
+          // path) before this tick ran, the platform correctly refuses a
+          // contradictory decline-after-apply — that's the backend
+          // protecting state-machine integrity, not a bug to retry through.
+          // Record it as already-handled (closer to "contacted" than
+          // "declined": real engagement already happened) and move on,
+          // rather than erroring every tick forever.
+          const detail = err instanceof Error ? err.message : String(err);
+          if (detail.includes("apply record already exists")) {
+            await db
+              .insertInto("a2a_contacted_tasks")
+              .values({ job_id: task.jobId, okx_agent_id: aspAgentId, counterparty_agent_id: task.counterpartyAgentId ?? null })
+              .onConflict((oc) => oc.column("job_id").doNothing())
+              .execute();
+            continue;
+          }
+          throw err;
+        }
         await db
           .insertInto("a2a_declined_tasks")
           .values({ job_id: task.jobId, okx_agent_id: aspAgentId, counterparty_agent_id: task.counterpartyAgentId ?? null, reason: scope.reason })

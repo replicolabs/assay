@@ -156,10 +156,25 @@ switch (sub) {
           title: "Assess vendor candidates",
           tokenAmount: "1",
           tokenSymbol: "USDT"
+        },
+        {
+          // Matches the "agent asp-reject" magic jobId above — a task the
+          // scope gate declines, but the daemon's autonomous session has
+          // already (legitimately) applied to first.
+          jobId: "0xracedjob",
+          myAgentId: "1001",
+          myRole: "asp",
+          counterpartyAgentId: "9002",
+          counterpartyRole: "user",
+          status: "created",
+          statusCode: 0,
+          title: "Write my smart contract",
+          tokenAmount: "1",
+          tokenSymbol: "USDT"
         }
       ],
       totalAgents: 1,
-      totalTasks: 1
+      totalTasks: 2
     });
     break;
   }
@@ -182,6 +197,17 @@ switch (sub) {
           paymentMode: 1,
           providerAgentId: "1001",
           buyerAgentId: "9001",
+          tokenAmount: "1",
+          tokenSymbol: "USDT"
+        },
+        {
+          jobId: "0xracedjob",
+          title: "Write my smart contract",
+          description: "Write a Solidity staking contract for me directly.",
+          status: 0,
+          paymentMode: 1,
+          providerAgentId: "1001",
+          buyerAgentId: "9002",
           tokenAmount: "1",
           tokenSymbol: "USDT"
         },
@@ -222,6 +248,14 @@ switch (sub) {
     break;
   }
   case "agent asp-reject": {
+    // Live-verified 2026-07-25: a real race between this responder's polling
+    // scope-gate and the okx-a2a daemon's event-driven autonomous session
+    // (which had already applied to the same job) produced exactly this
+    // exit-1-with-ok-false-on-stdout shape — magic jobId reproduces it.
+    if (args[2] === "0xracedjob") {
+      process.stdout.write(JSON.stringify({ ok: false, error: "Wallet API error (code=1001): apply record already exists for this job, provider and operator" }));
+      process.exit(1);
+    }
     ok({ success: true });
     break;
   }
